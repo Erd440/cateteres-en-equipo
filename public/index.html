@@ -322,13 +322,8 @@ function rxSVG(p,hint){
  return s+'</svg>';
 }
 function handSVG(g){
- const sw=[0,12,24,42][g]||0,skin=g>=2?'#ecd9d0':g===1?'#f0cdbd':'#eebfa9';
- let s='<svg viewBox="0 0 240 180" role="img" aria-label="Dorso de la mano con una vía periférica"><rect width="240" height="180" fill="#101c20"/><ellipse cx="120" cy="112" rx="70" ry="50" fill="'+skin+'"/>';
- for(let i=0;i<4;i++)s+='<ellipse cx="'+(72+i*32)+'" cy="48" rx="11" ry="34" fill="'+skin+'"/>';
- s+='<ellipse cx="190" cy="122" rx="12" ry="30" fill="'+skin+'" transform="rotate(-50 190 122)"/>';
- if(sw)s+='<circle cx="112" cy="106" r="'+sw+'" fill="#f6efe9" opacity=".88" stroke="#cdb8ad" stroke-width="2"/>';
- s+='<path d="M112 106L58 152" stroke="#9ab8c8" stroke-width="5" stroke-linecap="round"/><circle cx="112" cy="106" r="4" fill="#3d9cc4"/></svg>';
- return s;
+ const f=g>=2?'h3':g===1?'h1':'h0',al=['Dorso de la mano con una vía periférica, sin cambios','Dorso de la mano con una vía periférica: hinchazón leve y palidez alrededor del sitio','','Dorso de la mano y muñeca hinchados, con la piel tensa, brillante y pálida'][g>=2?3:g]||'';
+ return '<svg viewBox="0 0 960 720" role="img" aria-label="'+al+'"><image href="img/'+f+'.jpg" width="960" height="720" preserveAspectRatio="xMidYMid slice"/></svg>';
 }
 function legsSVG(st){
  const L=st===2?'#efe6e0':'#eebfa9',T=st===0?'#eebfa9':st===1?'#e8e0db':'#6f97b3';
