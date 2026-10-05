@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Catéteres en Equipo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#eaf1f3;--card:#ffffff;--ink:#14262b;--mut:#51666c;--line:#cddbdf;--accent:#0c6a73;--aink:#ffffff;
+--ok:#1b7f47;--okbg:#e3f4ea;--bad:#b8352a;--badbg:#fbe9e6;--warn:#8a5d0c;--warnbg:#fcf1d6;
+--font:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+--disp:'Bricolage Grotesque','Atkinson Hyperlegible',system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+--bg:#0d1a1e;--card:#15262b;--ink:#e6eff1;--mut:#9ab0b5;--line:#2a4047;--accent:#4fc0c6;--aink:#05191b;
+--ok:#4cc27d;--okbg:#10301f;--bad:#f08072;--badbg:#3a1714;--warn:#e3b457;--warnbg:#33290f}}
+:root[data-theme="dark"]{
+--bg:#0d1a1e;--card:#15262b;--ink:#e6eff1;--mut:#9ab0b5;--line:#2a4047;--accent:#4fc0c6;--aink:#05191b;
+--ok:#4cc27d;--okbg:#10301f;--bad:#f08072;--badbg:#3a1714;--warn:#e3b457;--warnbg:#33290f}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 var(--font)}
+#app{max-width:560px;margin:0 auto;padding:12px 14px 40px}
+h1,h2,h3{font-family:var(--disp);line-height:1.15;margin:.2em 0 .4em;letter-spacing:-.01em}
+h1{font-size:34px;font-weight:800}h2{font-size:25px;font-weight:800}h3{font-size:19px;font-weight:700}
+p{margin:.5em 0}
+.btn{display:block;width:100%;min-height:58px;padding:14px 16px;margin:10px 0;border:0;border-radius:16px;background:var(--accent);color:var(--aink);font:700 18px/1.2 var(--font);cursor:pointer;text-align:center}
+.btn.sec{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+.btn.sm{min-height:48px;font-size:16px;padding:10px 12px}
+.btn:disabled{opacity:.4;cursor:default}
+.btn:active:not(:disabled){transform:scale(.99)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin:12px 0}
+.hud{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--bg);padding:8px 0;border-bottom:1px solid var(--line);font-size:15px}
+.hud b{font-size:17px}
+.hearts{color:var(--bad);letter-spacing:2px;font-size:19px;white-space:nowrap}.hearts i{color:var(--line);font-style:normal}
+.tm{font-variant-numeric:tabular-nums;font-weight:700;font-size:19px}.tm.low{color:var(--bad)}
+.imgbox{background:#0a1316;border-radius:14px;padding:6px;margin:10px 0}
+.imgbox svg{display:block;width:100%;height:auto;max-height:50vh;margin:0 auto}
+.cap{font-size:14px;color:var(--mut);margin:2px 2px 8px}
+.tag{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:6px 0}
+.opt{display:block;width:100%;text-align:left;min-height:58px;padding:13px 14px;margin:8px 0;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;font:inherit;cursor:pointer}
+.opt.mine{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.opt.ok{border-color:var(--ok);background:var(--okbg);box-shadow:inset 0 0 0 2px var(--ok);font-weight:700}
+.opt.bad{border-color:var(--bad);background:var(--badbg);box-shadow:inset 0 0 0 2px var(--bad)}
+.opt.ok::after{content:' ✓ Correcta';color:var(--ok)}
+.opt.bad::after{content:' ✗ Incorrecta';color:var(--bad);font-weight:700}
+.opt:disabled{color:var(--ink);opacity:1;cursor:default}
+.opt[hidden]{display:none}
+.fb{border-radius:14px;padding:12px 14px;margin:10px 0;border:2px solid}
+.fb.ok{background:var(--okbg);border-color:var(--ok)}.fb.bad{background:var(--badbg);border-color:var(--bad)}.fb.warn{background:var(--warnbg);border-color:var(--warn)}
+.fb strong{display:block;margin-bottom:2px}
+.ver{background:var(--warnbg);color:var(--warn);border-radius:6px;padding:0 4px;font-size:.86em;font-weight:700}
+.src{font-size:14px;color:var(--mut);margin-top:4px}
+table.t{width:100%;border-collapse:collapse;font-size:15px}
+table.t td,table.t th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+table.t td:first-child{color:var(--mut)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.chip{min-height:48px;padding:8px 14px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:700;cursor:pointer}
+.chip[aria-pressed=true]{background:var(--accent);color:var(--aink);border-color:var(--accent)}
+.muted{color:var(--mut);font-size:15px}
+.row2{display:flex;gap:8px}.row2>*{flex:1}
+.roles{font-size:15px;display:grid;grid-template-columns:1fr 1fr;gap:2px 12px}
+.roles b{color:var(--accent)}
+.qn{font-size:15px;color:var(--mut)}
+.obs{border-left:5px solid var(--warn)}
+.obs .sct{margin-top:14px;font-size:17px}
+.seq{margin:6px 0 4px;padding-left:24px}.seq li{margin:5px 0}
+details.ckd{border-top:1px solid var(--line);margin-top:12px}
+details.ckd summary{font-weight:700;cursor:pointer;padding:13px 0;color:var(--accent)}
+.cki,.ckr{border-top:1px solid var(--line);padding:10px 0}
+.ckr{font-size:15px}
+.ckl{display:flex;gap:8px;align-items:center;font-weight:700}
+.ic{flex:none;width:32px;height:32px;border-radius:50%;background:var(--bg);color:var(--accent);display:inline-flex;align-items:center;justify-content:center}
+.ic svg{width:19px;height:19px}
+.seg{display:flex;gap:6px;margin-top:8px}
+.sg{flex:1;min-height:48px;padding:6px 4px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:700 14px/1.15 var(--font);cursor:pointer}
+.sg[aria-pressed=true]::before{content:'✓ '}
+.sg[aria-pressed=true][data-v="1"]{background:var(--okbg);border-color:var(--ok)}
+.sg[aria-pressed=true][data-v="2"]{background:var(--badbg);border-color:var(--bad)}
+.sg[aria-pressed=true][data-v="3"]{background:var(--bg);border-color:var(--mut)}
+.rt{display:inline-block;border-radius:8px;padding:1px 8px;font-weight:700;margin:6px 6px 2px 0}
+.rt.hit,.rt.ok{background:var(--okbg);color:var(--ok)}.rt.miss{background:var(--badbg);color:var(--bad)}.rt.fa{background:var(--warnbg);color:var(--warn)}.rt.rev,.rt.nm{background:var(--bg);color:var(--mut)}
+.ov{position:fixed;inset:0;z-index:20;background:rgba(5,12,14,.62);overflow:auto;padding:calc(12px + env(safe-area-inset-top,0px)) 12px calc(12px + env(safe-area-inset-bottom,0px))}
+.ovc{max-width:520px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px}
+.bl{list-style:none;margin:8px 0;padding:0}
+.bl li{display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.bl .ic{width:42px;height:42px}.bl .ic svg{width:24px;height:24px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cbtn{min-height:64px;padding:8px 10px;border-radius:14px;border:2px dashed var(--accent);background:var(--card);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.cbtn b{display:block;color:var(--accent)}
+.cbtn small{color:var(--mut);font-size:13px;line-height:1.2;display:block}
+.cbtn:disabled{opacity:.4;border-style:solid}
+.big{font-family:var(--disp);font-size:44px;font-weight:800;line-height:1}
+.badge{display:flex;gap:10px;align-items:center;padding:8px 0}
+.badge svg{flex:none}
+.cert{border:3px double var(--accent);border-radius:18px;padding:18px;text-align:center;background:var(--card)}
+input[type=text]{width:100%;min-height:56px;font:inherit;padding:10px 14px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
+details.rv{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin:8px 0}
+details.rv summary{font-weight:700;cursor:pointer;min-height:40px}
+.rvi{border-top:1px solid var(--line);padding:8px 0;font-size:15px}
+.rvi.crit{border-left:4px solid var(--bad);padding-left:8px}
+.rok{color:var(--ok);font-weight:700}
+@media print{.noprint{display:none!important}body{background:#fff;color:#000}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+'use strict';
+/* ---------- Datos ---------- */
+const Q=(q,o,c,w,s)=>({q,o,c,w,s});
+const LV=[
+ {n:'Reconocer',t:90,b:'Mirada atenta',f:'Tipos de catéter, materiales e indicaciones.'},
+ {n:'Insertar y verificar',t:180,b:'Punta en su lugar',f:'Longitud de inserción y lectura de la radiografía: punta bien, alta o baja.'},
+ {n:'Mantener',t:180,b:'Asepsia sostenida',f:'Bundle, curación, equipos e infusiones, con errores escondidos.'},
+ {n:'Anticipar',t:240,b:'Tendencia a tiempo',f:'Tres tomas seriadas para detectar una complicación incipiente.'},
+ {n:'Crisis en equipo',t:120,b:'Equipo en crisis',f:'Un PICC que evoluciona a taponamiento, en eventos encadenados.'}
+];
+const CARDS=[
+ {k:'segunda',n:'Segunda mirada',d:'Marca referencias en la imagen y suma 30 s'},
+ {k:'pausa',n:'Pausa de equipo',d:'Detiene el reloj hasta 60 s'},
+ {k:'consulta',n:'Consulta al especialista',d:'Descarta dos opciones incorrectas'},
+ {k:'escudo',n:'Escudo',d:'Absorbe el próximo error crítico'}
+];
+const QL=['Identificar, 10 puntos','Interpretar, 20 puntos','Intervención prioritaria, 30 puntos'];
+const B5='Prematuro de 27 semanas, 920 g, día 9. PICC de 1,9 Fr por la basílica derecha desde el día 3, con nutrición parenteral y lípidos. Punta en la cava superior (T5) al colocarlo. Longitud externa documentada: 5,0 cm.';
+/* ---------- Bundle de referencia y checklist de quien observa ---------- */
+/* Cada ítem: texto corto para tildar, texto de la tarjeta (si es distinto) y dibujo del ícono. */
+const IT={
+ man:['Higiene de manos','','M12 3C9 7 6.5 10 6.5 13.5a5.5 5.5 0 0 0 11 0C17.5 10 15 7 12 3z'],
+ bar:['Barrera máxima','Barrera máxima: gorro, barbijo, camisolín y guantes estériles','M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6z'],
+ cam:['Campo amplio','','M3 6h18v12H3zM10 10h4v4h-4z'],
+ ant:['Antisepsia de piel','Antisepsia de piel [VERIFICAR antiséptico del protocolo]','M4 20l9-9M11 8a3.5 3.5 0 1 1 5 5l-2 2-5-5z'],
+ pur:['Purgado de la línea','','M3 9h18M3 15h18M10 12a2 2 0 1 0 4 0a2 2 0 1 0-4 0'],
+ rxc:['Confirmación radiológica antes de infundir','','M5 3h14v18H5zM12 6v12M9 8h6M9 11h6M9 14h6'],
+ con:['Desinfección del conector','Desinfección del conector con fricción y tiempo de secado [VERIFICAR tiempos de fricción y de secado]','M3 12h6M9 8h6v8H9zM15 10h3v4h-3zM18 12h3'],
+ rot:['Rotulado y vigencia de equipos','Rotulado y vigencia de equipos y prolongadores [VERIFICAR vigencia de cada equipo]','M3 12l9-9h8v8l-9 9zM16 8h.01'],
+ lav:['Volumen de lavado adecuado al calibre','Volumen de lavado adecuado al calibre [VERIFICAR volumen para cada calibre]','M4 20l4-4M7 13l4 4M9 15l8-8-2-2-8 8M14 6l4 4M17 4l3 3'],
+ cur:['Curación indemne y fechada','','M4 7h16v10H4zM9 10h6v4H9z'],
+ gua:['Guantes estériles','','M8 21v-7l-2.5-3.5 1.6-1.2L9 11V5.5a1.5 1.5 0 0 1 3 0V10l4.5 1.6c1 .4 1.5 1.3 1.3 2.3L17 21z'],
+ cae:['Campo estéril','','M3 6h18v12H3zM10 10h4v4h-4z'],
+ mat:['Material estéril sobre superficie estéril','','M3 15h18l-2 4H5zM8 15V9h8v6']
+};
+/* Etapas: el checklist de cada caso usa la lista de su etapa, en este orden. img es la imagen de referencia de la tarjeta. */
+const ST={
+ ins:{n:'Inserción',it:['man','bar','cam','ant','pur','rxc'],img:{k:'foto',f:'ins',cap:'Así se ve la barrera máxima completa, con el campo amplio'}},
+ man:{n:'Mantenimiento',it:['man','con','rot','lav','cur','ant'],img:{k:'foto',f:'man',cap:'Fricción del conector antes de usarlo, con el equipo rotulado'}},
+ pro:{n:'Procedimiento',it:['man','gua','cae','mat','ant'],img:{k:'foto',f:'pro',cap:'Todo el material queda dentro del campo estéril'},nota:'Lista propuesta para el juego [VERIFICAR con el protocolo de la unidad].'}
+};
+const MK=['Sin marcar','Cumple','No cumple','No se observa'];
+const RT={hit:'Falla detectada',miss:'Falla no detectada',fa:'Falsa alarma',ok:'Acertó',rev:'Para revisar',nm:'Sin marcar'};
+const DEFN=['','La escena lo muestra hecho.','','La escena no llega a mostrarlo.'];
+const CK_PTS=10,CK_SEG=30,CK_EXTRA=60; /* puntos por falla real detectada, segundos que descuenta cada falsa alarma y segundos que suma una ronda con escena */
+/* La opción correcta va siempre primera (índice 0); la app mezcla el orden al mostrarla. */
+/* Campo ck de un caso con escena: e es la etapa, tt el título, img el dibujo, st la secuencia, pie lo que la escena llega a mostrar,
+   v el estado correcto de cada ítem de la etapa (1 cumple, 2 no cumple, 3 no se observa) y n la devolución por ítem. */
+const CASES=[
+/* ---- Nivel 1 ---- */
+{id:'1.1',lv:0,t:'¿Qué catéter es?',ctx:'Prematuro de 29 semanas, 1100 g, día 2, intubado, con gases frecuentes.',img:{k:'rx',c:'cau',tip:8,cap:'Radiografía esquemática de frente'},q:[
+ Q('¿Qué catéter muestra la imagen?',['Catéter arterial umbilical','Catéter venoso umbilical','PICC de miembro inferior','Catéter femoral'],[],'Baja hacia la pelvis y sube por la aorta a la izquierda de la columna.','SIBEN, INS'),
+ Q('¿Para qué se coloca habitualmente en este paciente?',['Presión arterial invasiva y toma de gases','Nutrición parenteral prolongada','Exanguinotransfusión','Drogas vasoactivas'],[],'Es el acceso para monitoreo invasivo y extracciones frecuentes en el recién nacido grave.','SIBEN'),
+ Q('Hay que mantenerlo permeable. ¿Qué se infunde?',['Solución de baja carga con heparina a bajo caudal, según protocolo','Nutrición parenteral con dextrosa al 15%','Un bolo de antibiótico cada 8 horas','Nada, se deja con tapón'],[1,2],'No se usa para nutrición ni medicación [VERIFICAR concentración y caudal].','SIBEN, INS')]},
+{id:'1.2',lv:0,t:'La solución decide el acceso',ctx:'Prematuro de 27 semanas, 800 g, día 3. Nutrición parenteral con dextrosa al 15% y aminoácidos al 3%, por unas tres semanas.',img:{k:'baby',d:['per','picc','umb'],cap:'Accesos posibles'},q:[
+ Q('¿Qué característica de la solución condiciona el acceso?',['Su alta osmolaridad y la dextrosa mayor al 12,5%','El color de la bolsa','El volumen total','La marca del fabricante'],[],'La osmolaridad y el pH definen si una solución puede ir por vía periférica.','INS'),
+ Q('¿Por qué no corresponde la vía periférica?',['Daña el endotelio y puede extravasarse con lesión de la piel inmadura','Porque es más cara','Porque no admite volumen','Porque necesita rayos para verificarse'],[],'Las soluciones hiperosmolares irritan la vena y necrosan la piel al extravasarse.','INS, SIBEN'),
+ Q('¿Qué acceso corresponde para tres semanas?',['PICC con la punta central verificada antes de usarlo','Vía periférica de 24 G renovada cada día','PICC sin verificar para no demorar','Esperar a que haya mejor vena'],[1,2],'Para tres semanas conviene un acceso central estable, y no se usa hasta confirmar la punta.','INS, SIBEN')]},
+{id:'1.3',lv:0,t:'Calibre y lúmenes',ctx:'Prematuro de 25 semanas, 780 g, necesita un PICC.',img:{k:'cal',cap:'Calibres frente a la vena'},q:[
+ Q('¿Qué material permite verificar la punta por radiografía?',['Radiopaco, de silicona o poliuretano','Cualquier plástico transparente','Metal','Un catéter con lastre líquido'],[],'El catéter debe ser radiopaco para ver la punta.','INS'),
+ Q('¿Por qué se prefiere un solo lumen en este peso?',['El calibre menor ocupa menos la vena y se manipula menos','Porque se ve mejor','Porque admite más velocidad','Porque no necesita apósito'],[],'Menos calibre y menos lúmenes, menos riesgo de trombosis y de infección por manipulación.','INS, CDC'),
+ Q('¿Qué se prioriza al elegir el calibre?',['El más fino que cubra la indicación y la vena disponible','El más grueso, para infundir más rápido','El que haya en stock','El de doble lumen, para ahorrar un acceso'],[1],'Se elige el dispositivo de menor calibre y menos lúmenes que resuelva la indicación [VERIFICAR calibre exacto para 780 g].','INS')]},
+{id:'1.4',lv:0,t:'Una vía periférica que cambia',ctx:'RN de 34 semanas, 2000 g, con dextrosa al 10% y un antibiótico por 48 horas. En el control horario el sitio está pálido y levemente hinchado.',img:{k:'hand',g:1,cap:'Dorso de la mano con vía de 24 G'},q:[
+ Q('¿Qué se observa?',['Una infiltración inicial, de grado 1','Una flebitis de grado 4','Un hematoma por la punción','Un sitio normal'],[],'Piel pálida con edema menor de 2,5 cm y fría es grado 1 en la escala de INS.','INS'),
+ Q('¿Por qué importa actuar ya?',['El edema crece si se sigue infundiendo y puede dañar el tejido','Porque la bomba suena','Porque va a mejorar sola','Porque hay que cambiar el apósito'],[],'El líquido sigue entrando al tejido y la lesión progresa, aun sin alarma de la bomba.','INS'),
+ Q('¿Qué se hace primero?',['Detener la infusión, no lavar, retirar el catéter y elevar el miembro','Aumentar el caudal para que abra','Aplicar calor intenso','Esperar una hora y volver a mirar'],[1,2,3],'Se detiene, se retira y se valora, porque seguir o esperar agrava la lesión.','INS')]},
+{id:'1.5',lv:0,t:'¿Midline, PICC o vía periférica?',ctx:'RN de 33 semanas, 1800 g, con un antibiótico por 10 días y dextrosa al 10%, sin venas periféricas confiables.',img:{k:'baby',d:['per','mid','picc'],cap:'Tres accesos posibles'},q:[
+ Q('¿Qué dispositivo es adecuado para este tratamiento?',['Un midline','Un catéter venoso umbilical','Un catéter arterial umbilical','Un PICC con la punta en la aurícula'],[],'Son infusiones compatibles con la vía periférica, durante unos 10 días [VERIFICAR].','INS, SIBEN'),
+ Q('¿Dónde termina la punta del midline y qué implica?',['En la vena axilar o proximal del brazo, fuera del tórax: solo admite soluciones compatibles con vía periférica','En la cava superior: admite cualquier solución','En la aurícula derecha','En la vena yugular'],[],'La punta no es central, y eso define lo que se puede infundir.','INS'),
+ Q('Al día siguiente se indica nutrición parenteral con dextrosa al 15%. ¿Qué se hace?',['Avisar y pedir un acceso central, como un PICC con la punta verificada','Pasarla por el midline','Pasarla más rápido para que no se acumule','Pasarla por el midline solo de noche'],[1,2],'Una solución hiperosmolar necesita una punta central.','INS')]},
+/* ---- Nivel 2 ---- */
+{id:'2.1',lv:1,t:'CVU bien ubicado',ctx:'Recién nacido de 1000 g con un CVU de 3,5 Fr recién colocado. Radiografía de control.',img:{k:'rx',c:'cvu',tip:9.7,cap:'Radiografía de control'},rows:[['Peso','1000 g'],['Catéter','CVU 3,5 Fr']],ck:{e:'ins',tt:'registro de la colocación',img:{k:'foto',f:'e21',cap:'Quien coloca el catéter, con la vestimenta ya puesta'},st:['Higiene de manos.','Se coloca gorro, barbijo y guantes estériles.','Se arma un campo amplio.','Antisepsia de piel.','Se coloca el CVU con la línea purgada.','Se pide la radiografía de control antes de infundir.'],pie:'El registro muestra todo lo que se hizo, en orden.',v:[1,2,1,1,1,1],n:{1:'Faltó el camisolín estéril: la barrera máxima incluye gorro, barbijo, camisolín y guantes estériles.'}},q:[
+ Q('¿Cuál es la longitud de inserción con (3 × peso + 9) ÷ 2 + 1?',['7 cm','12 cm','5 cm','9,5 cm'],[],'3 × 1 + 9 = 12, la mitad es 6 y se suma 1 [VERIFICAR contra la tabla de la unidad].','Shukla y Ferrara, vía SIBEN'),
+ Q('La punta está en T9 a T10, sobre el diafragma. ¿Qué indica?',['Bien ubicada, en la unión de la cava inferior con la aurícula','Dentro de la aurícula derecha','En el sistema porta','En la aorta'],[],'Esa altura corresponde a la zona buscada para el CVU.','SIBEN, INS'),
+ Q('¿Qué se hace ahora?',['Fijarlo con puente de cinta, registrar la longitud externa y habilitar su uso','Avanzarlo 1 cm más para asegurar','Retirarlo y colocar otro','Usarlo sin registrar la longitud'],[1],'Se anota la longitud externa para detectar migraciones, y no se avanza un catéter ya colocado.','SIBEN, CDC')]},
+{id:'2.2',lv:1,t:'CVU bajo, en el hígado',ctx:'Prematuro de 30 semanas, 1400 g, día 1. La nutrición parenteral ya está conectada.',img:{k:'rx',c:'cvu',liver:true,tip:12,cap:'Radiografía de control'},rows:[['Peso','1400 g'],['Catéter','CVU 3,5 Fr']],ck:{e:'ins',tt:'horarios del registro',img:{k:'tl',cap:'Horarios anotados en el registro'},st:['Se coloca el CVU.','08:10. Se conecta la nutrición parenteral.','08:25. Se lee la radiografía de control.'],pie:'El registro solo muestra los horarios. De la técnica de colocación no dice nada.',v:[3,3,3,3,3,2],n:{5:'La nutrición parenteral se conectó antes de leer la radiografía: no se infunden soluciones hiperosmolares hasta confirmar la punta.'}},q:[
+ Q('¿Dónde está la punta?',['Por debajo del diafragma, proyectada en el hígado','Sobre el diafragma, en la aurícula','En la aorta abdominal','En la cava superior'],[],'La punta está baja y el trayecto se desvía hacia el hígado.','SIBEN'),
+ Q('¿Por qué importa?',['Una solución hiperosmolar en el sistema porta puede dañar el hígado','Es solo un problema estético','Porque el catéter se tapa antes','Porque cambia el calibre'],[],'Una punta intrahepática expone a necrosis hepática y trombosis portal.','SIBEN, INS'),
+ Q('¿Qué se hace primero?',['Suspender las infusiones hiperosmolares, avisar y reposicionar con técnica estéril retirándolo, o retirarlo, con nueva imagen','Seguir con la nutrición parenteral, que ya está conectada','Avanzarlo 3 cm para llegar a T10','Dejarlo y revisar mañana'],[1,2],'Un catéter mal ubicado no se usa para soluciones hiperosmolares, y no se avanza [VERIFICAR criterio local].','SIBEN')]},
+{id:'2.3',lv:1,t:'CAU en zona intermedia',ctx:'Prematuro de 28 semanas, 1200 g, intubado. Se conecta la línea arterial.',img:{k:'rx',c:'cau',tip:11.5,cap:'Radiografía de control'},rows:[['Peso','1200 g'],['Catéter','CAU, posición alta buscada']],ck:{e:'ins',tt:'conexión de la línea arterial',img:{k:'foto',f:'e23',cap:'La línea en el momento de conectarla'},st:['Se arma la línea con la llave de tres vías.','Se conecta la línea al catéter.'],pie:'La escena solo muestra el armado y la conexión de la línea.',v:[3,3,3,3,2,3],n:{4:'Burbuja de aire en la línea arterial: se purga por completo antes de conectar, por el riesgo de embolia aérea.',5:'La escena no dice cuándo se leyó la radiografía.'}},q:[
+ Q('¿Cuál es la longitud para posición alta, con 3 × peso + 9?',['12,6 cm','8,2 cm','6,3 cm','15 cm'],[],'3 × 1,2 + 9 = 12,6. La fórmula baja, peso + 7, daría 8,2 [VERIFICAR].','Shukla y Ferrara, vía SIBEN'),
+ Q('La punta queda entre T11 y T12. ¿Cómo se clasifica?',['Intermedia, frente a las ramas viscerales y renales, no recomendada','Alta, entre T6 y T9','Baja, entre L3 y L4','En el ventrículo'],[],'Entre T10 y L2 la punta queda frente a tronco celíaco, mesentérica y renales [VERIFICAR límites].','SIBEN, INS'),
+ Q('¿Qué se hace?',['Avisar y reposicionar con técnica estéril hasta una posición aceptada, con nueva radiografía, o recolocar uno nuevo','Dejarlo y empezar a usarlo','Avanzarlo hasta T8 sin control','Usarlo solo para medir presión'],[1,2],'La zona intermedia no se acepta, y se corrige con control radiográfico [VERIFICAR protocolo local].','SIBEN, CDC')]},
+{id:'2.4',lv:1,t:'PICC con la punta en la aurícula',ctx:'Prematuro de 27 semanas, 900 g. PICC por la basílica derecha. La longitud se midió hasta el tercer espacio intercostal derecho.',img:{k:'rx',c:'picc',tip:7,cap:'Radiografía de control'},rows:[['Peso','900 g'],['Catéter','PICC 1,9 Fr, basílica derecha']],q:[
+ Q('Para el miembro superior, ¿hasta dónde se mide en superficie?',['Hasta el tercer espacio intercostal derecho, siguiendo el trayecto venoso','Hasta el ombligo','Hasta el codo contrario','Hasta el lóbulo de la oreja'],[],'Se mide siguiendo la vena hasta la zona de la unión cavoauricular [VERIFICAR el punto].','SIBEN, INS'),
+ Q('¿Qué muestra la imagen?',['Punta dentro de la aurícula derecha, demasiado profunda','Punta bien ubicada en la cava superior','Punta en la yugular','Punta en la cava inferior'],[],'La punta se proyecta dentro de la silueta cardíaca: más riesgo de arritmia y de derrame pericárdico.','INS, SIBEN'),
+ Q('¿Qué se hace?',['Retirarlo unos centímetros con técnica estéril hasta la cava superior y confirmar con imagen antes de usarlo','Dejarlo así porque funciona','Avanzarlo para que quede firme','Usarlo solo para soluciones isotónicas'],[1,2],'Un PICC con la punta en la aurícula se reposiciona y se verifica antes de infundir.','INS, SIBEN')]},
+{id:'2.5',lv:1,t:'Midline con la punta en la axila',ctx:'Prematuro de 32 semanas, 1500 g, día 5. Midline de 1,9 Fr por la basílica derecha, medido hasta el pliegue axilar.',img:{k:'rx',c:'mid',cap:'Radiografía centrada en el hombro'},rows:[['Peso','1500 g'],['Catéter','Midline 1,9 Fr']],q:[
+ Q('¿Dónde está la punta?',['En la vena axilar, fuera del tórax','En la aurícula derecha','En la cava inferior','En la arteria subclavia'],[],'La punta queda a la altura de la axila [VERIFICAR].','INS, SIBEN'),
+ Q('¿Es una posición correcta para un midline?',['Sí, la punta periférica es la esperada, y solo se usa con soluciones compatibles con vía periférica','No, siempre debe llegar a la cava','No, debe quedar en la mano','Sí, y por eso admite nutrición parenteral hiperosmolar'],[],'Un midline no termina en una vena central.','INS'),
+ Q('¿Qué se hace?',['Fijarlo, registrar la longitud externa, rotularlo como periférico y limitar las infusiones','Habilitarlo para nutrición parenteral con dextrosa al 15%','Avanzarlo hasta la aurícula','Retirarlo por no ser un acceso central'],[1,2],'Se registra la longitud externa para detectar migraciones y se aclara qué puede infundirse.','INS, SIBEN')]},
+/* ---- Nivel 3 ---- */
+{id:'3.1',lv:2,t:'La curación del prematuro extremo',ctx:'Prematuro de 26 semanas, 840 g, día 6, curación programada del PICC.',img:{k:'foto',f:'e31',cap:'Sitio de inserción con el apósito levantado'},ck:{e:'man',tt:'curación del PICC',st:['Se abre el material de curación.','Se levanta el apósito anterior.','Antisepsia con clorhexidina alcohólica al 2%. No se retira después.'],pie:'La escena muestra todo lo que se hizo hasta ahora, en orden. La curación sigue en curso: todavía no se colocó el apósito nuevo.',v:[2,3,3,3,3,2],n:{0:'No hubo higiene de manos antes de abrir el material.',4:'La curación está en curso: todavía no hay apósito nuevo para valorar.',5:'Clorhexidina alcohólica sin retirar en un prematuro extremo [VERIFICAR antiséptico del protocolo].'}},q:[
+ Q('¿Qué se ve mal?',['Clorhexidina alcohólica en un prematuro extremo, sin retirarla, y falta la higiene de manos','El apósito es transparente','El brazo está en reposo','El catéter es de silicona'],[],'La piel enrojecida y brillante sugiere irritación por el antiséptico.','CDC, SIBEN [VERIFICAR antiséptico del protocolo]'),
+ Q('¿Por qué es un problema?',['La piel inmadura absorbe el antiséptico y puede sufrir una quemadura química','Porque huele fuerte','Porque el apósito pierde color','Porque mejora la adherencia'],[],'La barrera cutánea del prematuro extremo es inmadura.','CDC, SAP [VERIFICAR]'),
+ Q('¿Qué se hace primero?',['Retirar el antiséptico con suero o agua estéril, valorar la piel, rehacer la curación con la técnica del protocolo y notificar','Aplicar más clorhexidina para desinfectar mejor','Tapar con otro apósito grueso','Dejarlo hasta el cambio habitual'],[1],'Se retira el producto, se mira la piel y se repite la curación con higiene de manos.','CDC, SIBEN')]},
+{id:'3.2',lv:2,t:'Equipos, conector y lavado',ctx:'Prematuro de 26 semanas, 800 g, PICC de 1,9 Fr, día 9, con nutrición parenteral y lípidos.',ck:{e:'man',tt:'lavado del PICC',img:{k:'lip',cap:'Etiqueta del equipo de lípidos, conector y jeringa de lavado'},st:['Higiene de manos.','Se conecta la jeringa al conector.','Se lava con 3 mL.'],pie:'La secuencia muestra todo lo que se hizo, en orden.',v:[1,2,2,2,3,3],n:{1:'La jeringa se conectó sin desinfectar el conector: faltó la fricción con alcohol.',2:'Equipo de lípidos vencido: lleva 72 horas colocado y se cambia a las 24.',3:'Volumen de lavado excesivo [VERIFICAR volumen de lavado para 1,9 Fr].'}},q:[
+ Q('¿Cuántas fallas hay?',['Tres: equipo de lípidos vencido, conector sin desinfectar y lavado excesivo','Ninguna','Una, el equipo de lípidos','Dos, el conector y la etiqueta'],[],'Las tres son relevantes [VERIFICAR volumen de lavado para 1,9 Fr].','CDC, INS'),
+ Q('¿Por qué el equipo de lípidos se cambia a las 24 horas?',['Porque los lípidos favorecen el crecimiento de microorganismos en el equipo','Porque se desgasta el plástico','Porque lo exige la bomba','Porque cambia el color'],[],'Las emulsiones lipídicas sostienen el crecimiento microbiano.','CDC'),
+ Q('¿Qué se hace primero?',['Frenar, higiene de manos, desinfectar el conector por fricción, cambiar el equipo con técnica aséptica y lavar con volumen mínimo en pulsos','Seguir, porque el bebé no tiene fiebre','Cambiar el equipo en la próxima guardia','Lavar con más volumen para limpiar la línea'],[1],'Se corrigen las tres fallas en el momento, sin esperar un signo clínico.','CDC, INS, SIBEN [VERIFICAR volumen]')]},
+{id:'3.3',lv:2,t:'Compatibilidades',ctx:'Prematuro de 29 semanas, 1200 g, día 10, con nutrición parenteral que contiene calcio. Se indica ceftriaxona.',img:{k:'med',cap:'Lo que está conectado y lo que se va a pasar'},rows:[['Catéter','PICC de un solo lumen'],['En curso','Nutrición parenteral con calcio'],['Jeringa rotulada','Ceftriaxona'],['Plan de enfermería','Pausar la nutrición, pasar la ceftriaxona y lavar']],q:[
+ Q('¿Qué combinación de riesgo aparece?',['Ceftriaxona con soluciones que contienen calcio','Suero fisiológico con heparina','Dextrosa con aminoácidos','Lípidos con agua estéril'],[],'Es una incompatibilidad conocida.','Ficha técnica de ceftriaxona, alerta FDA 2009 [VERIFICAR]'),
+ Q('¿Por qué no alcanza con una pausa y un lavado?',['En menores de 28 días se describieron precipitados con casos fatales, y el riesgo no se resuelve con un lavado','Porque la bomba no lo permite','Porque la ceftriaxona se destruye con la luz','Porque el PICC es de silicona'],[],'En neonatos que requieren calcio, la ceftriaxona está contraindicada [VERIFICAR el criterio de 28 días].','Ficha técnica de ceftriaxona'),
+ Q('¿Qué se hace?',['No administrarla, avisar a quien la indicó y a farmacia, y pedir una alternativa','Pasarla con una pausa y 1 mL de lavado','Mezclarla dentro de la bolsa de nutrición','Pasarla más lento por el mismo lumen'],[1,2,3],'Ninguna maniobra de lavado elimina el riesgo.','Ficha técnica de ceftriaxona, INS')]},
+/* ---- Nivel 4 ---- */
+{id:'4.1',lv:3,t:'Infiltración que avanza',ctx:'Prematuro de 31 semanas, 1500 g, día 4. Vía periférica de 24 G en el dorso de la mano izquierda, con nutrición parenteral periférica con dextrosa al 12,5% y calcio.',tomas:[
+ {h:'08:00',img:{k:'hand',g:0},rows:[['Bomba','Sin alarmas'],['Piel','Rosada y tibia'],['Edema','Ninguno'],['Grado de infiltración','0']]},
+ {h:'10:00',img:{k:'hand',g:1},rows:[['Bomba','Sin alarmas'],['Piel','Pálida y algo fría'],['Edema','Menor de 2,5 cm'],['Grado de infiltración','1']]},
+ {h:'12:00',img:{k:'hand',g:3},rows:[['Bomba','Sin alarmas'],['Piel','Tensa, translúcida y fría'],['Edema','Dorso de la mano y muñeca'],['Grado de infiltración','3 o mayor [VERIFICAR adaptación neonatal]']]}],q:[
+ Q('¿Qué muestra la tendencia?',['Una infiltración que progresa de grado 0 a un grado alto','Un sitio sin cambios','Una mejoría progresiva','Un hematoma estable'],[],'Cada toma agrega edema, frío y piel tensa.','INS'),
+ Q('La bomba nunca alarmó. ¿Qué significa?',['Que la bomba no detecta de forma confiable la infiltración: manda la valoración del sitio','Que no pasa nada','Que la bomba está rota','Que el catéter está ocluido'],[],'Una bomba puede seguir infundiendo contra el tejido sin alarmar [VERIFICAR redacción de la norma].','INS'),
+ Q('¿Qué se hace?',['Detener la infusión, no lavar, aspirar lo posible, retirar el catéter, elevar el miembro, avisar y valorar hialuronidasa según protocolo','Seguir hasta terminar la bolsa','Aplicar calor y seguir infundiendo','Lavar con 5 mL de suero para despejar'],[1,2,3],'Una extravasación de dextrosa concentrada con calcio puede necrosar la piel inmadura [VERIFICAR dosis y dilución de hialuronidasa].','INS')]},
+{id:'4.2',lv:3,t:'Pie frío con un CAU',ctx:'Prematuro de 28 semanas, 1100 g, día 3, con CAU en posición alta. Se mira el pie del lado del catéter.',tomas:[
+ {h:'06:00',img:{k:'legs',s:0},rows:[['Pie derecho','Rosado'],['Llenado capilar','2 s'],['Presión arterial','Estable']]},
+ {h:'09:00',img:{k:'legs',s:1},rows:[['Pie derecho','Dedos pálidos'],['Llenado capilar derecho','4 s'],['Pie izquierdo','Normal']]},
+ {h:'12:00',img:{k:'legs',s:2},rows:[['Pie derecho','Blanquecino, dedos cianóticos, frío'],['Llenado capilar derecho','Más de 5 s'],['Presión arterial central','Estable']]}],q:[
+ Q('¿Qué muestra la tendencia?',['Isquemia progresiva del miembro del lado del catéter','Una variación normal de color','Un problema del pie izquierdo','Hipotermia general'],[],'Solo cambia el miembro del lado del catéter.','SIBEN, CDC'),
+ Q('¿Qué explica el cuadro?',['Vasoespasmo o trombosis por el catéter, con riesgo de pérdida de tejido','Una buena perfusión con piel pigmentada','Un efecto del apósito','Un error de la balanza'],[],'La isquemia de miembro es una complicación conocida del catéter arterial.','CDC, SIBEN'),
+ Q('¿Qué se hace?',['Avisar de inmediato, suspender la infusión y prepararse para retirar el CAU según indicación, con vigilancia seriada de la perfusión','Seguir observando, porque la presión central está estable','Pasar un bolo por el catéter para destaparlo','Frotar la pierna y esperar'],[1,2],'Con signos de insuficiencia vascular el CAU se retira.','CDC')]},
+{id:'4.3',lv:3,t:'Un deterioro con el sitio limpio',ctx:'Prematuro de 29 semanas, 1100 g, día 12, con PICC desde el día 5. El sitio no tiene enrojecimiento en ninguna toma.',tomas:[
+ {h:'08:00',img:{k:'site',red:false},rows:[['Temperatura','36,8 °C'],['FC','150'],['Apneas','1 breve'],['Glucemia','90 mg/dL'],['Alimentación','La tolera']]},
+ {h:'12:00',img:{k:'site',red:false},rows:[['Temperatura','37,4 °C, inestable'],['FC','170'],['Apneas','3'],['Glucemia','150 mg/dL'],['Otros','Residuo gástrico, llenado capilar 3 s']]},
+ {h:'16:00',img:{k:'site',red:false},rows:[['Temperatura','36,2 °C'],['FC','185'],['Apneas','5'],['Glucemia','190 mg/dL'],['Otros','Letargia, abdomen distendido, llenado capilar 4 s']]}],q:[
+ Q('¿Qué muestra la tendencia?',['Un deterioro general progresivo, con inestabilidad térmica, apneas e hiperglucemia','Un bebé estable','Una mejoría gradual','Solo un problema de alimentación'],[],'Los cambios se acumulan en las tres tomas.','SIBEN'),
+ Q('El sitio está limpio. ¿Qué se sospecha?',['Bacteriemia asociada al catéter, aunque no haya enrojecimiento','Que no hay infección porque el sitio está limpio','Una alergia al apósito','Un cuadro neurológico aislado'],[1],'En el prematuro la sepsis suele ser inespecífica y el sitio puede verse normal.','CDC, SIBEN'),
+ Q('¿Qué se hace?',['Hemocultivos por el catéter y por vena periférica antes del antibiótico, avisar para tratamiento empírico según protocolo y evaluar el retiro','Esperar a que aparezca eritema en el sitio','Tratar las apneas con estimulación y seguir','Retirar el PICC sin tomar cultivos'],[1,2],'Se cultiva antes de tratar y se evalúa si el catéter debe salir.','CDC, INS')]},
+/* ---- Nivel 5 ---- */
+{id:'5.1',lv:4,t:'El cambio brusco',ctx:B5,img:{k:'rx',c:'picc',tip:5,cap:'Radiografía de colocación, día 3'},rows:[['Longitud externa documentada','5,0 cm'],['Longitud externa actual','3,5 cm'],['FC','90 lpm'],['SpO2','78%'],['Llenado capilar','4 s'],['Piel','Pálida']],q:[
+ Q('¿Qué dato llama la atención?',['Un deterioro súbito con una longitud externa menor a la documentada','La marca del apósito','El color del cable','La edad gestacional'],[],'El catéter se ve 1,5 cm más corto por fuera.','INS, SIBEN'),
+ Q('¿Qué puede haber pasado?',['Una migración hacia adentro, con la punta ahora en la aurícula o más allá, y riesgo de derrame con compromiso hemodinámico','Que el bebé tiene hambre','Un problema de la bomba','Un exceso de abrigo'],[],'Un PICC que entra puede dejar la punta en la aurícula y lesionar la pared o el pericardio.','INS, SIBEN'),
+ Q('¿Qué se hace primero?',['Pedir ayuda, detener todas las infusiones por el PICC y dar soporte respiratorio y de oxigenación','Seguir la nutrición parenteral para no interrumpir el aporte','Retirar el PICC de inmediato sin avisar','Pasar un bolo de suero por el PICC'],[1,2,3],'Se activa al equipo y se deja de infundir por un catéter cuya punta puede estar mal.','INS, SIBEN')]},
+{id:'5.2',lv:4,t:'La imagen',ctx:B5+' Ahora el bebé está hipotenso.',img:{k:'rx',c:'picc',tip:7,cardio:true,cap:'Radiografía actual'},rows:[['Radiografía previa','Punta en T5'],['Presión arterial media','Baja'],['FC','100 lpm'],['Pulsos','Finos'],['Ruidos cardíacos','Apagados']],q:[
+ Q('¿Qué muestra la radiografía?',['Una silueta cardíaca agrandada y una punta más profunda que antes','Un pulmón normal','Una fractura de clavícula','La punta en la vena yugular'],[],'Se compara con la imagen de colocación.','SIBEN'),
+ Q('¿Qué sugiere el conjunto?',['Derrame pericárdico con compromiso hemodinámico, es decir, taponamiento, por el catéter','Una neumonía','Una hipoglucemia','Un neumotórax a tensión derecho'],[],'Cardiomegalia reciente, hipotensión y ruidos apagados con un PICC intracardíaco apuntan a taponamiento.','SIBEN, INS [VERIFICAR]'),
+ Q('¿Qué se hace?',['Pedir una ecocardiografía urgente a pie de cama, avisar al especialista y preparar una pericardiocentesis','Repetir la radiografía en 6 horas','Iniciar inotrópicos por el PICC','Pedir una resonancia'],[1,2],'Se confirma y se prepara el drenaje sin demora.','SIBEN, SAP [VERIFICAR]')]},
+{id:'5.3',lv:4,t:'La confirmación',ctx:B5+' La presión sigue cayendo.',img:{k:'eco',cap:'Ecografía subxifoidea esquemática'},rows:[['Presión arterial','En descenso'],['FC','100 lpm']],q:[
+ Q('¿Qué muestra la ecografía?',['Un derrame pericárdico con compresión de la aurícula derecha','Un corazón normal','Un trombo en la cava','Una cardiopatía congénita'],[],'Hay líquido alrededor del corazón que comprime las cavidades derechas.','SIBEN'),
+ Q('¿Qué explica la caída del gasto?',['El líquido pericárdico impide el llenado del corazón: taponamiento','La anemia','La hipotermia','Un coágulo en el catéter'],[],'La compresión limita el llenado y baja el volumen que sale.','SIBEN'),
+ Q('¿Qué se hace?',['Pericardiocentesis urgente guiada por ecografía por personal entrenado, intentando aspirar por el PICC según indicación y sin infundir nada','Retirar el PICC y observar','Pasar un bolo grande de suero por el PICC','Esperar al especialista de la mañana'],[1,2,3],'El drenaje es lo que revierte el taponamiento, y no se infunde por un catéter que puede estar dentro del pericardio.','SIBEN [VERIFICAR aspirar por el catéter según protocolo]')]},
+{id:'5.4',lv:4,t:'El drenaje',ctx:B5+' Se prepara la pericardiocentesis.',img:{k:'eco',needle:true,cap:'Punción subxifoidea guiada por ecografía'},rows:[['Líquido aspirado','5 mL de aspecto lechoso'],['FC','150 lpm'],['Presión arterial media','En ascenso']],ck:{e:'pro',tt:'preparación de la pericardiocentesis',img:{k:'foto',f:'e54',cap:'Mesa de preparación'},st:['Se arma el campo estéril.','Se prepara el material de la pericardiocentesis.'],pie:'La escena solo muestra la mesa de preparación.',v:[3,3,1,2,3],n:{2:'El campo estéril está armado.',3:'El material se apoyó sobre una superficie no estéril: una pausa breve lo corrige sin demorar el drenaje.'}},q:[
+ Q('¿Qué se obtuvo y qué cambió?',['Líquido de aspecto lechoso y mejoría hemodinámica inmediata','Sangre oscura sin cambios','Aire sin mejoría','Nada'],[],'Se drenaron 5 mL y subió la presión.','SIBEN'),
+ Q('¿Qué sugiere el aspecto lechoso?',['Que la nutrición con lípidos se infundió en el pericardio, lo que confirma que el catéter perforaba o estaba dentro del saco','Una infección por hongos sin relación con el catéter','Leche materna','Un artefacto de la jeringa'],[],'El aspecto coincide con la emulsión lipídica que corría por el PICC [VERIFICAR análisis del líquido].','SIBEN'),
+ Q('¿Qué se hace con el catéter y el acceso?',['Retirar el PICC, asegurar otro acceso, dejar monitoreo continuo y repetir la ecografía','Volver a usar el PICC cuando mejore','Avanzarlo hasta la cava','Dejarlo cerrado por si hace falta'],[1],'Un catéter que perforó no se reutiliza, y se controla la reacumulación [VERIFICAR momento del retiro].','INS, SIBEN')]},
+{id:'5.5',lv:4,t:'El cierre',ctx:B5+' El bebé está estable después del drenaje y con otro acceso. Falta cerrar el evento.',rows:[['Evento 1','Deterioro y longitud externa menor'],['Evento 2','Radiografía con cardiomegalia'],['Evento 3','Ecografía con derrame'],['Evento 4','Drenaje con mejoría']],sbar:true,q:[
+ Q('¿Qué control rutinario habría permitido detectar la migración antes?',['Comparar la longitud externa con la documentada en cada turno','Medir el perímetro cefálico','Cambiar el apósito todos los días','Pesar al bebé dos veces'],[],'La longitud externa es la primera señal de que el catéter se movió.','INS, SIBEN'),
+ Q('¿Para qué sirve notificar este evento?',['Para analizar las causas del sistema y evitar que se repita, sin buscar culpables','Para sancionar a quien estaba de turno','Para cumplir un trámite sin consecuencias','Para evitar hablar con la familia'],[],'La notificación alimenta la mejora de los procesos [VERIFICAR sistema de la institución].','SAP, SIBEN'),
+ Q('¿Cómo se cierra el evento?',['SBAR completo al equipo médico y a la jefatura, información clara a la familia, registro y notificación','Con un aviso verbal al turno siguiente','Sin informar a la familia hasta el alta','Con un registro que diga solo bradicardia'],[],'Se comunica de forma estructurada, se registra todo y se informa a la familia.','SAP, SIBEN')]}
+];
+/* ---------- Imágenes SVG (dibujos esquemáticos, sin fotos) ---------- */
+const Yl=l=>28+(l-1)*15+7.5;
+const VN=['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12','L1','L2','L3','L4','L5'];
+function rxSVG(p,hint){
+ /* Dibujo con aspecto de placa. La geometría no cambia: cada vértebra mide 15 unidades y Yl(n) da su centro. */
+ const ty=Yl(p.tip||8),mx=x=>240-x;
+ let s='<svg viewBox="0 0 240 320" role="img" aria-label="Radiografía esquemática de frente">';
+ s+='<defs><filter id="rxb" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="2.2"/></filter><filter id="rxs" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation=".7"/></filter>'
+ +'<radialGradient id="rxv" cx="50%" cy="46%" r="70%"><stop offset="55%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".55"/></radialGradient>'
+ +'<filter id="rxn" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7"/><feColorMatrix values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .5 -.18"/></filter></defs>';
+ s+='<rect width="240" height="320" fill="#04080a"/>';
+ /* partes blandas: cuello, hombros, brazos, tronco */
+ s+='<g filter="url(#rxb)"><path d="M104 0H136V22Q150 30 196 46Q214 60 212 110Q208 150 212 200Q216 250 198 320H42Q24 250 28 200Q32 150 28 110Q26 60 44 46Q90 30 104 22Z" fill="#1c292e"/>'
+ +'<path d="M60 74L0 38M180 74L240 38" stroke="#1c292e" stroke-width="27" stroke-linecap="round"/>';
+ /* pulmones: el aire se ve oscuro */
+ s+='<path d="M54 44Q38 100 48 160Q78 148 108 163L108 58Q84 36 54 44Z" fill="#070d0f"/><path d="M186 44Q202 100 192 160Q164 148 132 164L132 58Q156 36 186 44Z" fill="#070d0f"/>';
+ /* abdomen, hígado, mediastino y corazón: más densos, se ven más claros */
+ s+='<path d="M30 166Q76 146 118 165L122 167Q164 146 210 166Q216 250 198 320H42Q24 250 30 166Z" fill="#26353b"/>'
+ +'<path d="M32 166Q76 146 118 165L119 232Q84 246 46 236Q32 204 32 166Z" fill="#34464d"/>'
+ +'<path d="M108 34H134Q140 70 136 100H106Q102 70 108 34Z" fill="#33444b"/>'
+ +'<ellipse cx="'+(p.cardio?126:128)+'" cy="'+Yl(7)+'" rx="'+(p.cardio?52:31)+'" ry="'+(p.cardio?45:29)+'" fill="'+(p.cardio?'#4b5f67':'#44575f')+'"/></g>';
+ /* gas en el estómago y en las asas */
+ s+='<g filter="url(#rxb)" fill="#0c1417" opacity=".8"><ellipse cx="168" cy="186" rx="17" ry="10"/><ellipse cx="152" cy="222" rx="11" ry="9"/><ellipse cx="176" cy="246" rx="10" ry="9"/><ellipse cx="90" cy="254" rx="11" ry="8"/><ellipse cx="146" cy="268" rx="9" ry="7"/><ellipse cx="68" cy="278" rx="8" ry="7"/></g>';
+ /* húmeros, cabezas humerales y clavículas */
+ s+='<g filter="url(#rxs)"><path d="M52 68L2 38M188 68L238 38" stroke="#93a8ae" stroke-width="6" stroke-linecap="round" opacity=".5"/><circle cx="55" cy="68" r="7.5" fill="#93a8ae" opacity=".45"/><circle cx="185" cy="68" r="7.5" fill="#93a8ae" opacity=".45"/>'
+ +'<path d="M113 45Q86 34 58 47M127 45Q154 34 182 47" stroke="#b4c5ca" stroke-width="3.6" stroke-linecap="round" fill="none" opacity=".62"/>';
+ /* doce pares de costillas, una por vértebra dorsal */
+ const LX=[62,52,45,41,38,36,35,35,36,39,62,80];
+ for(let i=1;i<=12;i++){
+  const y=Yl(i),lx=LX[i-1],ye=y+9+i*1.3,cx=lx+(110-lx)*.42,cy=y-10;
+  let d='M110 '+y+'Q'+cx+' '+cy+' '+lx+' '+ye+'M130 '+y+'Q'+mx(cx)+' '+cy+' '+mx(lx)+' '+ye;
+  s+='<path d="'+d+'" stroke="#a9bcc2" stroke-width="'+(i>10?1.8:2.3)+'" stroke-linecap="round" fill="none" opacity="'+(i>10?.4:.5)+'"/>';
+  if(i<=8){const ax=lx+20+i*1.5,ay=ye+17;s+='<path d="M'+lx+' '+ye+'Q'+(lx-1)+' '+(ye+12)+' '+ax+' '+ay+'M'+mx(lx)+' '+ye+'Q'+mx(lx-1)+' '+(ye+12)+' '+mx(ax)+' '+ay+'" stroke="#a9bcc2" stroke-width="2.6" stroke-linecap="round" fill="none" opacity=".2"/>';}
+ }
+ /* pelvis y caderas */
+ s+='<ellipse cx="84" cy="298" rx="27" ry="17" fill="#93a8ae" opacity=".3" transform="rotate(-24 84 298)"/><ellipse cx="156" cy="298" rx="27" ry="17" fill="#93a8ae" opacity=".3" transform="rotate(24 156 298)"/><path d="M110 285H130L126 318H114Z" fill="#b4c5ca" opacity=".4"/></g>';
+ /* cúpulas del diafragma */
+ s+='<path d="M32 166Q76 146 118 165M122 167Q164 146 208 166" stroke="#8fa9b0" stroke-width="1.2" fill="none" opacity=".55"/>';
+ /* columna: cuerpos vertebrales con sus pedículos */
+ for(let i=0;i<17;i++){const y=28+i*15;s+='<rect x="110" y="'+y+'" width="20" height="12" rx="2.6" fill="#c3d2d6" opacity=".6"/><ellipse cx="114" cy="'+(y+5)+'" rx="1.7" ry="2.2" fill="#eef4f5" opacity=".45"/><ellipse cx="126" cy="'+(y+5)+'" rx="1.7" ry="2.2" fill="#eef4f5" opacity=".45"/>';}
+ /* grano de la placa y viñeta */
+ s+='<rect width="240" height="320" filter="url(#rxn)" opacity=".5"/><rect width="240" height="320" fill="url(#rxv)"/>';
+ /* en los catéteres del brazo se rotula T2 en lugar de T4, para que el rótulo no quede debajo del catéter */
+ const arm=p.c==='picc'||p.c==='mid',lab=hint?VN.map((v,i)=>i+1):arm?[2,6,8,10,12,14,16]:[4,6,8,10,12,14,16];
+ lab.forEach(l=>{s+='<text x="104" y="'+(Yl(l)+3)+'" font-size="9" fill="#c9dadf" text-anchor="end" stroke="#04080a" stroke-width="2.4" paint-order="stroke">'+VN[l-1]+'</text>';});
+ s+='<text x="12" y="20" font-size="13" fill="#e3edf0" font-weight="700">D</text><text x="221" y="20" font-size="13" fill="#e3edf0" font-weight="700">I</text>';
+ if(hint){
+  const zone={cvu:[9,10.4,'T9 a T10'],cau:[6,9.4,'T6 a T9'],picc:[4,6,'T4 a T6']}[p.c];
+  if(zone){const y1=Yl(zone[0])-7,y2=Yl(zone[1])+7;s+='<rect x="30" y="'+y1+'" width="180" height="'+(y2-y1)+'" fill="#3ddc97" opacity=".2"/><text x="210" y="'+(y2-14)+'" font-size="9" fill="#7be8b6" text-anchor="end" stroke="#04080a" stroke-width="2.4" paint-order="stroke">zona buscada</text><text x="210" y="'+(y2-4)+'" font-size="9" fill="#7be8b6" text-anchor="end" stroke="#04080a" stroke-width="2.4" paint-order="stroke">'+zone[2]+'</text>';}
+  s+='<path d="M113 '+Yl(4.5)+'l7-8 7 8z" fill="none" stroke="#ffd24d" stroke-width="1.4"/><text x="150" y="'+(Yl(4.5)+3)+'" font-size="9" fill="#ffd24d" stroke="#04080a" stroke-width="2.4" paint-order="stroke">carina</text>';
+  s+='<text x="46" y="158" font-size="9" fill="#c9dadf" stroke="#04080a" stroke-width="2.4" paint-order="stroke">diafragma</text>';
+ }
+ let d='',tx=0,tipy=ty;
+ if(p.c==='cvu'){ if(p.liver){d='M120 262L120 214Q119 190 98 178';tx=98;tipy=178;} else {d='M120 262L120 '+ty;tx=120;} }
+ else if(p.c==='cau'){d='M120 262L124 290Q138 300 137 282L137 '+ty;tx=137;}
+ else if(p.c==='picc'){d='M22 50L52 64Q84 72 108 86L110 '+ty;tx=110;}
+ else if(p.c==='mid'){d='M22 50L52 64L60 70';tx=60;tipy=70;}
+ /* el catéter es radiopaco: línea blanca, con la punta marcada */
+ s+='<path d="'+d+'" stroke="#04080a" stroke-width="4.6" fill="none" stroke-linejoin="round" stroke-linecap="round" opacity=".7"/><path d="'+d+'" stroke="#fbfdfd" stroke-width="2.1" fill="none" stroke-linejoin="round" stroke-linecap="round"/>';
+ s+='<circle cx="'+tx+'" cy="'+tipy+'" r="3.4" fill="#ff5d5d" stroke="#fff" stroke-width="1"/>';
+ if(p.c==='cvu'||p.c==='cau')s+='<circle cx="120" cy="262" r="4.4" fill="none" stroke="#e3edf0" stroke-width="1.2"/>';
+ return s+'</svg>';
+}
+function handSVG(g){
+ const f=g>=2?'h3':g===1?'h1':'h0',al=['Dorso de la mano con una vía periférica, sin cambios','Dorso de la mano con una vía periférica: hinchazón leve y palidez alrededor del sitio','','Dorso de la mano y muñeca hinchados, con la piel tensa, brillante y pálida'][g>=2?3:g]||'';
+ return '<svg viewBox="0 0 960 720" role="img" aria-label="'+al+'"><image href="img/'+f+'.jpg" width="960" height="720" preserveAspectRatio="xMidYMid slice"/></svg>';
+}
+function legsSVG(st){
+ const L=st===2?'#efe6e0':'#eebfa9',T=st===0?'#eebfa9':st===1?'#e8e0db':'#6f97b3';
+ let s='<svg viewBox="0 0 240 180" role="img" aria-label="Piernas y pies del recién nacido"><rect width="240" height="180" fill="#101c20"/>';
+ s+='<rect x="56" y="8" width="34" height="112" rx="16" fill="'+L+'"/><ellipse cx="73" cy="138" rx="24" ry="16" fill="'+L+'"/>';
+ for(let i=0;i<5;i++)s+='<circle cx="'+(56+i*9)+'" cy="154" r="5" fill="'+T+'"/>';
+ s+='<rect x="150" y="8" width="34" height="112" rx="16" fill="#eebfa9"/><ellipse cx="167" cy="138" rx="24" ry="16" fill="#eebfa9"/>';
+ for(let i=0;i<5;i++)s+='<circle cx="'+(150+i*9)+'" cy="154" r="5" fill="#eebfa9"/>';
+ s+='<text x="73" y="174" font-size="10" fill="#cfdde0" text-anchor="middle">lado del catéter</text><text x="167" y="174" font-size="10" fill="#cfdde0" text-anchor="middle">referencia</text></svg>';
+ return s;
+}
+function siteSVG(p){
+ let s='<svg viewBox="0 0 240 160" role="img" aria-label="Sitio de inserción del catéter con apósito"><rect width="240" height="160" fill="#101c20"/><rect x="14" y="46" width="212" height="72" rx="32" fill="#eebfa9"/>';
+ if(p.red)s+='<ellipse cx="120" cy="82" rx="38" ry="26" fill="#e0525c" opacity=".5"/><ellipse cx="112" cy="74" rx="14" ry="8" fill="#ffd7d0" opacity=".5"/>';
+ s+='<rect x="66" y="38" width="112" height="88" rx="8" fill="#cfe6ee" opacity=".5" stroke="#8cc4d4" stroke-dasharray="4 3"/>';
+ if(p.red)s+='<path d="M178 38L198 28 180 66Z" fill="#cfe6ee" opacity=".8"/>';
+ s+='<path d="M120 82L22 82" stroke="#f4f4f4" stroke-width="3" stroke-linecap="round"/><circle cx="120" cy="82" r="3.5" fill="#3d9cc4"/></svg>';
+ return s;
+}
+function ecoSVG(p){
+ let s='<svg viewBox="0 0 240 200" role="img" aria-label="Ecografía subxifoidea esquemática"><rect width="240" height="200" fill="#050809"/><path d="M120 4L8 196H232Z" fill="#171f22"/>';
+ s+='<ellipse cx="120" cy="116" rx="72" ry="64" fill="#020303" stroke="#46555b"/><ellipse cx="120" cy="116" rx="44" ry="40" fill="#5d6c72"/>';
+ s+='<ellipse cx="96" cy="124" rx="10" ry="18" fill="#2b353a"/><ellipse cx="142" cy="108" rx="16" ry="20" fill="#2b353a"/>';
+ s+='<path d="M96 102L96 130" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>';
+ s+='<text x="26" y="64" font-size="10" fill="#cfdde0">derrame</text><text x="40" y="176" font-size="10" fill="#cfdde0">AD comprimida</text><text x="156" y="82" font-size="10" fill="#cfdde0">VD</text>';
+ if(p.needle)s+='<path d="M18 194L90 150" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><text x="22" y="186" font-size="10" fill="#fff">aguja</text>';
+ return s+'</svg>';
+}
+function babySVG(devs){
+ let s='<svg viewBox="0 0 240 200" role="img" aria-label="Esquema del recién nacido con accesos vasculares"><rect width="240" height="200" fill="#101c20"/>';
+ s+='<circle cx="120" cy="30" r="20" fill="#eebfa9"/><ellipse cx="120" cy="98" rx="32" ry="46" fill="#eebfa9"/>';
+ s+='<path d="M92 68L44 96M148 68L196 96M108 138L98 184M132 138L142 184" stroke="#eebfa9" stroke-width="14" stroke-linecap="round" fill="none"/>';
+ const T=(x,y,t)=>'<text x="'+x+'" y="'+y+'" font-size="10" fill="#cfdde0">'+t+'</text>';
+ if(devs.includes('per')){s+='<path d="M44 96L36 106" stroke="#7ec1e0" stroke-width="3" stroke-linecap="round"/>'+T(4,122,'Periférica');}
+ if(devs.includes('mid')){s+='<path d="M60 90L88 74" stroke="#ffd24d" stroke-width="3" stroke-linecap="round"/><circle cx="88" cy="74" r="3" fill="#ff6b6b"/>'+T(34,60,'Midline');}
+ if(devs.includes('picc')){s+='<path d="M60 90L92 78L112 66L114 84" stroke="#ffd24d" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="114" cy="84" r="3" fill="#ff6b6b"/>'+T(150,66,'PICC');}
+ if(devs.includes('umb')){s+='<path d="M120 124L120 96" stroke="#ffd24d" stroke-width="3" stroke-linecap="round"/><circle cx="120" cy="124" r="4" fill="none" stroke="#cfdde0"/>'+T(150,128,'Umbilical');}
+ return s+'</svg>';
+}
+function calSVG(){
+ let s='<svg viewBox="0 0 240 150" role="img" aria-label="Calibres de catéter frente a una vena"><rect width="240" height="150" fill="#101c20"/>';
+ s+='<rect x="14" y="12" width="212" height="30" rx="15" fill="#34576f"/><text x="120" y="31" font-size="11" fill="#dbe9f0" text-anchor="middle">vena del prematuro</text>';
+ [[60,5,'1 Fr'],[88,8,'1,9 Fr'],[116,11,'2 Fr o más']].forEach(a=>{s+='<rect x="14" y="'+a[0]+'" width="150" height="'+a[1]+'" rx="'+(a[1]/2)+'" fill="#ffd24d"/><text x="176" y="'+(a[0]+a[1]/2+4)+'" font-size="11" fill="#cfdde0">'+a[2]+'</text>';});
+ return s+'</svg>';
+}
+/* Imágenes ilustradas, incrustadas en el archivo. Los rótulos se dibujan encima: [x, y, líneas de texto, x e y del punto señalado]. */
+const FOTO={
+ ins:{alt:'Barrera máxima completa: gorro que cubre todo el pelo, barbijo, camisolín estéril de manga larga y guantes estériles sobre los puños. Delante, un campo amplio con una abertura en el centro',
+  lab:[[150,70,['gorro'],522,112],[850,170,['barbijo'],668,214],[870,300,['camisolín','estéril'],770,400],[70,400,['guantes','estériles'],478,478],[140,768,['campo amplio']]],
+  src:'img/ins.jpg'},
+ man:{alt:'Dos manos frotan el conector de la línea con una gasa. Del equipo cuelga un rótulo',
+  lab:[[770,210,['fricción del','conector'],668,432],[170,740,['rótulo del','equipo'],520,600]],
+  src:'img/man.jpg'},
+ pro:{alt:'Mesa de preparación con el campo estéril extendido. Las gasas, el recipiente y la jeringa con aguja están dentro del campo',
+  lab:[[160,150,['campo estéril']],[420,610,['todo el material','dentro del campo']]],
+  src:'img/pro.jpg'},
+ e21:{alt:'Quien coloca el catéter lleva gorro, barbijo y guantes estériles, con ambo de manga corta y los antebrazos sin cubrir. Delante hay un campo amplio',
+  lab:[[150,70,['gorro'],522,112],[850,170,['barbijo'],668,214],[900,300,['ambo'],790,400],[70,400,['guantes','estériles'],478,478],[140,768,['campo amplio']]],
+  src:'img/e21.jpg'},
+ e23:{alt:'Línea arterial con una llave de tres vías. Dentro de la línea, junto a la llave, hay una burbuja de aire',
+  lab:[[720,190,['llave de','tres vías'],640,400],[740,610,['línea arterial'],960,520]],
+  src:'img/e23.jpg'},
+ e54:{alt:'Mesa de preparación: el campo estéril está armado, con gasas y un recipiente. La aguja y la jeringa de punción están apoyadas en la mesada, fuera del campo',
+  lab:[[160,150,['campo estéril']],[180,580,['aguja y jeringa','de punción'],690,645],[880,672,['mesada']]],
+  src:'img/e54.jpg'}
+,
+ e31:{alt:'Brazo de un prematuro con un PICC. El apósito transparente está levantado y la piel alrededor del sitio de inserción se ve enrojecida y brillante',
+  lab:[[230,150,['apósito','levantado'],600,450],[500,730,['catéter'],790,497]],
+  src:'img/e31.jpg'}
+};
+function fotoSVG(f){
+ const p=FOTO[f],W=1200,H=896,fs=44,lh=50,cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+ let s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+p.alt+'"><image href="'+p.src+'" width="'+W+'" height="'+H+'" preserveAspectRatio="xMidYMid slice"/>';
+ p.lab.forEach(a=>{
+  const w=Math.max.apply(null,a[2].map(t=>t.length))*fs*.6+40,h=a[2].length*lh+22,cx=a[0]+w/2;
+  if(a[3]!=null)s+='<path d="M'+cl(a[3],a[0],a[0]+w)+' '+cl(a[4],a[1],a[1]+h)+'L'+a[3]+' '+a[4]+'" stroke="#fff" stroke-width="4" stroke-linecap="round"/><circle cx="'+a[3]+'" cy="'+a[4]+'" r="9" fill="#ffd24d" stroke="#0a1316" stroke-width="3"/>';
+  s+='<rect x="'+a[0]+'" y="'+a[1]+'" width="'+w+'" height="'+h+'" rx="16" fill="#0a1316" fill-opacity=".82"/>';
+  a[2].forEach((t,i)=>{s+='<text x="'+cx+'" y="'+(a[1]+11+lh*(i+1)-12)+'" font-size="'+fs+'" font-weight="700" fill="#fff" text-anchor="middle">'+t+'</text>'});
+ });
+ return s+'</svg>';
+}
+/* Escenas para quien observa */
+function lipSVG(){
+ let s='<svg viewBox="0 0 240 214" role="img" aria-label="Etiqueta del equipo de lípidos: colocado el día 6 a las 10, vence el día 7 a las 10. Hoy es el día 9 a las 10. Debajo, el conector con una jeringa de 3 mL"><rect width="240" height="214" fill="#101c20"/>';
+ s+='<rect x="8" y="8" width="116" height="22" rx="11" fill="#223a43"/><text x="66" y="23" font-size="11" font-weight="700" fill="#dbe9f0" text-anchor="middle">Hoy: día 9, 10 h</text>';
+ s+='<path d="M8 48H232" stroke="#f3ecd2" stroke-width="6" stroke-linecap="round"/><path d="M120 50V62" stroke="#a9c1c8" stroke-width="1.5"/>';
+ s+='<rect x="40" y="62" width="160" height="52" rx="6" fill="#f4f1e4" stroke="#ffd24d" stroke-width="2"/>';
+ s+='<text x="50" y="78" font-size="10.5" font-weight="700" fill="#14262b">Equipo de lípidos</text><text x="50" y="93" font-size="10.5" fill="#14262b">Colocado: día 6, 10 h</text><text x="50" y="107" font-size="10.5" font-weight="700" fill="#14262b">Vence: día 7, 10 h</text>';
+ s+='<path d="M8 126H232" stroke="#27424b" stroke-dasharray="4 3"/>';
+ s+='<text x="8" y="144" font-size="10" fill="#a9c1c8">hacia el PICC de 1,9 Fr</text><path d="M8 172H84" stroke="#ffd24d" stroke-width="2.4"/>';
+ s+='<rect x="84" y="162" width="24" height="20" rx="4" fill="#7ec1e0"/><path d="M90 162v20M96 162v20M102 162v20" stroke="#34576f"/><text x="96" y="198" font-size="10" fill="#cfdde0" text-anchor="middle">conector</text>';
+ s+='<rect x="108" y="168" width="10" height="8" fill="#dbe9f0"/><rect x="118" y="160" width="78" height="24" rx="3" fill="#dbe9f0" fill-opacity=".2" stroke="#dbe9f0"/><rect x="119" y="161" width="71" height="22" rx="2" fill="#7ec1e0" opacity=".5"/>';
+ for(let i=1;i<=3;i++){const x=118+i*24;s+='<path d="M'+x+' 160v9" stroke="#fff"/><text x="'+x+'" y="155" font-size="9" fill="#cfdde0" text-anchor="middle">'+i+'</text>';}
+ s+='<path d="M190 160v24" stroke="#fff" stroke-width="3"/><path d="M191 172H226M226 162v20" stroke="#dbe9f0" stroke-width="3" stroke-linecap="round"/>';
+ s+='<text x="170" y="202" font-size="11" font-weight="700" fill="#ffd24d" text-anchor="middle">jeringa: 3 mL</text>';
+ return s+'</svg>';
+}
+function tlSVG(){
+ let s='<svg viewBox="0 0 240 104" role="img" aria-label="Línea de tiempo: a las 08:10 se conecta la nutrición parenteral y a las 08:25 se lee la radiografía"><rect width="240" height="104" fill="#101c20"/>';
+ s+='<path d="M16 46H222M214 40l8 6-8 6" stroke="#a9c1c8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
+ [[70,'08:10','Se conecta la','nutrición parenteral'],[170,'08:25','Se lee la','radiografía']].forEach(a=>{s+='<circle cx="'+a[0]+'" cy="46" r="7" fill="#ffd24d"/><text x="'+a[0]+'" y="28" font-size="15" font-weight="700" fill="#ffd24d" text-anchor="middle">'+a[1]+'</text><text x="'+a[0]+'" y="70" font-size="10.5" fill="#cfdde0" text-anchor="middle">'+a[2]+'</text><text x="'+a[0]+'" y="84" font-size="10.5" fill="#cfdde0" text-anchor="middle">'+a[3]+'</text>';});
+ return s+'</svg>';
+}
+function medSVG(){
+ let s='<svg viewBox="0 0 240 168" role="img" aria-label="Una bolsa de nutrición parenteral con calcio y una jeringa rotulada ceftriaxona llegan al mismo PICC, de un solo lumen"><rect width="240" height="168" fill="#101c20"/>';
+ s+='<path d="M60 66V96Q60 112 92 112H120M146 41H134Q120 41 120 58V140" stroke="#ffd24d" stroke-width="2.4" fill="none"/><circle cx="120" cy="112" r="4.5" fill="#ffd24d"/>';
+ s+='<rect x="14" y="10" width="92" height="58" rx="10" fill="#f3ecd2"/><text x="60" y="30" font-size="10.5" fill="#14262b" text-anchor="middle">Nutrición</text><text x="60" y="43" font-size="10.5" fill="#14262b" text-anchor="middle">parenteral</text><text x="60" y="57" font-size="10.5" font-weight="700" fill="#14262b" text-anchor="middle">con calcio</text>';
+ s+='<rect x="146" y="32" width="62" height="18" rx="3" fill="#dbe9f0"/><path d="M208 41H228M228 33v16" stroke="#dbe9f0" stroke-width="3" stroke-linecap="round"/><text x="180" y="24" font-size="11" font-weight="700" fill="#ffd24d" text-anchor="middle">ceftriaxona</text>';
+ s+='<text x="120" y="158" font-size="10.5" fill="#cfdde0" text-anchor="middle">PICC de un solo lumen</text>';
+ return s+'</svg>';
+}
+/* ---------- Estado y utilidades ---------- */
+const $app=document.getElementById('app');
+const KEY='cet-v1';
+let S=null,R=null,V=null;
+try{S=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){S=null}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const wipe=()=>{try{localStorage.removeItem(KEY)}catch(e){}};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ver=s=>esc(s).replace(/\[VERIFICAR[^\]]*\]/g,m=>'<span class="ver">'+m+'</span>');
+const mmss=t=>{t=Math.max(0,Math.ceil(t));return Math.floor(t/60)+':'+String(t%60).padStart(2,'0')};
+const put=(h,sc)=>{$app.innerHTML=h;if(sc!==false)window.scrollTo(0,0)};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const on=(sel,fn)=>document.querySelectorAll(sel).forEach(fn);
+const FMT={corto:[2,1,1,1,3],completo:[3,2,2,2,5]};
+function makePlan(f){return LV.map((l,k)=>{const ids=CASES.filter(c=>c.lv===k).map(c=>c.id);if(k===4)return f==='corto'?[ids[0],ids[2],ids[3]]:ids;return shuffle(ids).slice(0,FMT[f][k])})}
+function stop(){if(R&&R.timer){clearInterval(R.timer);R.timer=null}}
+const heartsN=n=>'♥'.repeat(Math.max(0,n))+'<i>'+'♥'.repeat(Math.max(0,5-n))+'</i>';
+const hearts=()=>heartsN(S.lives);
+/* ---------- Sala en vivo (capacidad room) ---------- */
+let ROOM=null,ROOMC=null,MODE=null,WAIT='',HJ=false,FT=null,FP=null,FOLLOW='',UNS=null,lastPres=null,FK=null;
+/* Fuera de Claude la sala funciona con una función propia del sitio (/api/room): quien coordina publica el estado y el resto lo consulta cada 2 segundos. */
+const rndId=n=>{const a='abcdefghijklmnopqrstuvwxyz0123456789';let s='';for(let i=0;i<n;i++)s+=a[Math.floor(Math.random()*a.length)];return s};
+const NETROOM={join:async(name,opt)=>{
+ const code=name.replace(/^cet-/,''),isHost=!!(opt&&opt.host),cbs=new Set();
+ let dead=false,busy=false,pend=null,n=0,hostObj=null,lastT=0,hbAt=0,iv=null,key='';
+ const me={isMe:true,presence:null,updatedAt:Date.now()};
+ const fire=()=>cbs.forEach(f=>{try{f()}catch(e){}});
+ const api=async(method,q,body)=>{
+  const t0=Date.now();
+  const res=await fetch('/api/room'+q,{method,cache:'no-store',headers:body?{'content-type':'application/json'}:{},body:body?JSON.stringify(body):undefined});
+  if(!res.ok)throw new Error('sala '+res.status);
+  const d=await res.json();d.off=(t0+Date.now())/2-d.now;return d;
+ };
+ const setN=d=>{if(typeof d.n==='number'&&d.n!==n){n=d.n;fire()}};
+ /* Quien coordina: una sola petición a la vez, y siempre gana el último estado. */
+ const pump=async()=>{
+  if(busy||dead)return;busy=true;
+  try{while(pend&&!dead){const x=pend;pend=null;
+   try{setN(await api('POST','',{r:code,k:key,p:x.p}));x.w.forEach(f=>f[0]())}catch(e){x.w.forEach(f=>f[1](e))}}}
+  finally{busy=false}
+ };
+ const beat=async()=>{
+  if(busy||dead||pend||!me.presence)return;busy=true;
+  try{setN(await api('POST','',{r:code,k:key}))}catch(e){}finally{busy=false}
+  if(pend)pump();
+ };
+ /* Quien sigue la partida: consulta el estado y avisa cada 15 segundos que sigue mirando. */
+ const vid=rndId(12);
+ const take=d=>{
+  const h=d.host&&d.now-d.host.a<40000?d.host:null;
+  if(!h){if(hostObj){hostObj=null;lastT=0;fire()}}
+  else if(h.t!==lastT){lastT=h.t;hostObj={isMe:false,presence:h.p,updatedAt:h.t+d.off};fire()}
+ };
+ const ask=async()=>{const hb=Date.now()-hbAt>15000;const d=await api('GET','?r='+code+'&v='+vid+(hb?'&hb=1':''));if(hb)hbAt=Date.now();return d};
+ const poll=async()=>{
+  if(busy||dead||document.hidden)return;busy=true;
+  try{take(await ask())}catch(e){}finally{busy=false}
+ };
+ const vis=()=>{if(!document.hidden)(isHost?beat:poll)()};
+ if(isHost){
+  try{const o=JSON.parse(localStorage.getItem('cet-hk')||'null');if(o&&o.c===code&&o.k)key=o.k}catch(e){}
+  if(!key){key=rndId(24);try{localStorage.setItem('cet-hk',JSON.stringify({c:code,k:key}))}catch(e){}}
+  iv=setInterval(beat,10000);
+ }else{
+  take(await ask());
+  iv=setInterval(poll,2000);
+ }
+ document.addEventListener('visibilitychange',vis);
+ return{
+  name,
+  peers:()=>isHost?[me].concat(Array.from({length:n},()=>({isMe:false,presence:null,updatedAt:0}))):(hostObj?[hostObj]:[]),
+  presence:p=>new Promise((ok,no)=>{me.presence=p;me.updatedAt=Date.now();if(pend){pend.p=p;pend.w.push([ok,no])}else pend={p,w:[[ok,no]]};pump()}),
+  onPeers:f=>{cbs.add(f);return()=>cbs.delete(f)},
+  leave:async()=>{dead=true;clearInterval(iv);document.removeEventListener('visibilitychange',vis);cbs.clear()}
+ };
+}};
+(async()=>{try{if(window.claude&&window.claude.use)ROOM=await window.claude.use('room')}catch(e){ROOM=null}if(!ROOM)ROOM=NETROOM})();
+const rand4=()=>{const a='abcdefghjkmnpqrstuvwxyz23456789';let s='';for(let i=0;i<4;i++)s+=a[Math.floor(Math.random()*a.length)];return s};
+const watchers=()=>ROOMC?ROOMC.peers().filter(p=>!p.isMe).length:0;
+async function joinCode(code,host){
+ if(!ROOM)return null;
+ try{
+  const nm='cet-'+code;
+  if(ROOMC&&ROOMC.name===nm)return ROOMC;
+  if(ROOMC){try{await ROOMC.leave()}catch(e){}ROOMC=null}
+  ROOMC=await ROOM.join(nm,{host:!!host});
+  return ROOMC;
+ }catch(e){ROOMC=null;return null}
+}
+function ensureHost(){
+ if(!ROOM||!S||!S.code||HJ||(ROOMC&&ROOMC.name==='cet-'+S.code))return;
+ HJ=true;
+ joinCode(S.code,true).then(r=>{HJ=false;if(r){r.onPeers(()=>{const e=$('wc');if(e)e.textContent=watchers()});sync()}}).catch(()=>{HJ=false});
+}
+function wait(m){WAIT=m;sync()}
+function sync(){
+ if(!ROOMC||!S||!S.code||MODE==='follow'||ROOMC.name!=='cet-'+S.code)return;
+ let p;
+ if(R&&!R.closing){const c=R.c;p={host:1,scr:'round',id:c.id,qi:R.qi,tk:R.tk,perm:R.perm,a:R.ans===null?-1:R.ans,hid:R.hid,hint:R.hint?1:0,left:Math.round(R.left),fr:Math.round(R.freeze),lives:S.lives,score:S.score,lv:S.lv,ri:S.ri,n:S.plan[S.lv].length,head:(R.head||'').slice(0,80),rc:S.rc,nm:S.names,msg:R.msg?String(R.msg[1]).slice(0,200):'',mt:R.msg?R.msg[0]:'',ck:R.k.d?R.k.m.join(''):''}}
+ else p={host:1,scr:'wait',m:WAIT,lives:S.lives,score:S.score,lv:S.lv};
+ try{ROOMC.presence(p).catch(()=>{})}catch(e){}
+}
+
+function imgHTML(m,hint){
+ if(!m)return'';
+ if(m.k==='tags')return '<div>'+m.items.map(t=>'<div class="tag">'+esc(t)+'</div>').join('')+'</div>';
+ let s='';
+ if(m.k==='rx')s=rxSVG(m,hint);else if(m.k==='hand')s=handSVG(m.g);else if(m.k==='legs')s=legsSVG(m.s);
+ else if(m.k==='site')s=siteSVG(m);else if(m.k==='eco')s=ecoSVG(m);else if(m.k==='baby')s=babySVG(m.d);else if(m.k==='cal')s=calSVG();
+ else if(m.k==='lip')s=lipSVG();else if(m.k==='foto')s=fotoSVG(m.f);else if(m.k==='tl')s=tlSVG();else if(m.k==='med')s=medSVG();
+ return '<div class="imgbox">'+s+'</div>'+(m.cap?'<div class="cap">'+esc(m.cap)+'</div>':'');
+}
+function tableHTML(rows){return rows?'<div class="card"><table class="t">'+rows.map(r=>'<tr><td>'+esc(r[0])+'</td><td>'+ver(r[1])+'</td></tr>').join('')+'</table></div>':''}
+/* ---------- Rol de quien observa: tarjeta del bundle, escena y checklist ---------- */
+const ico=id=>'<span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="'+IT[id][2]+'"/></svg></span>';
+function bundleOpen(e){
+ let cur=ST[e]?e:'ins';const old=$('ov');if(old)old.remove();
+ const ov=document.createElement('div');ov.id='ov';ov.className='ov noprint';ov.setAttribute('role','dialog');ov.setAttribute('aria-modal','true');ov.setAttribute('aria-label','Tarjeta del bundle');
+ const key=ev=>{if(ev.key==='Escape')close()};
+ const close=()=>{document.removeEventListener('keydown',key);ov.remove()};
+ const draw=()=>{
+  const st=ST[cur];
+  ov.innerHTML='<div class="ovc"><h2>Bundle de '+st.n.toLowerCase()+'</h2><p class="muted">Es la referencia para comparar con la escena. La puede mirar todo el equipo.</p>'
+  +'<div class="chips">'+Object.keys(ST).map(k=>'<button class="chip" data-e="'+k+'" aria-pressed="'+(k===cur)+'">'+ST[k].n+'</button>').join('')+'</div>'
+  +(st.img?imgHTML(st.img):'')+'<ul class="bl">'+st.it.map(k=>'<li>'+ico(k)+'<span>'+ver(IT[k][1]||IT[k][0])+'</span></li>').join('')+'</ul>'
+  +(st.nota?'<p class="muted">'+ver(st.nota)+'</p>':'')+'<button class="btn" id="ovx">Cerrar</button></div>';
+  ov.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{cur=b.dataset.e;draw()});
+  ov.querySelector('#ovx').onclick=close;
+ };
+ ov.onclick=ev=>{if(ev.target===ov)close()};
+ document.addEventListener('keydown',key);
+ draw();document.body.appendChild(ov);ov.querySelector('#ovx').focus({preventScroll:true});ov.scrollTop=0;
+}
+const obsWho=(nm,rc)=>nm&&nm.length>1?nm[(rc+2)%nm.length]:'';
+/* Compara las marcas con el estado correcto de cada ítem. Solo penaliza marcar No cumple donde no hay falla. Lo que queda sin marcar no suma ni resta. */
+function ckEval(c,m){
+ const k=c.ck;let hit=0,miss=0,fa=0,nf=0;
+ const rows=ST[k.e].it.map((id,i)=>{
+  const t=k.v[i],x=m[i]||0;let r;
+  if(t===2){nf++;if(x===2){r='hit';hit++}else{r='miss';miss++}}
+  else if(x===2){r='fa';fa++}
+  else r=!x?'nm':x===t?'ok':'rev';
+  return{id,t,x,r,n:(k.n&&k.n[i])||DEFN[t]};
+ });
+ return{rows,hit,miss,fa,nf};
+}
+/* st guarda las marcas (m), si ya se confirmó (d), si el checklist está abierto (o) y, en la sala, las marcas oficiales (off). */
+function obsHTML(c,st,mode,who){
+ const k=c.ck;
+ let h='<div class="card obs"><h3>Quien observa'+(who?': '+esc(who):'')+'</h3>';
+ if(!k)return h+'<p>En este caso no hay escena para observar: acompañá la valoración y revisá la respuesta antes de que se marque.</p><button class="btn sec sm" data-b="ins">Ver bundle</button></div>';
+ const its=ST[k.e].it,m=st.off||st.m,done=st.d||!!st.off;
+ h+='<p>Compará lo que pasa en la escena con el bundle. Tildá cada ítem y confirmá. Si algo no se cumple, el equipo hace una pausa.</p>'
+ +'<button class="btn sec sm" data-b="'+k.e+'">Ver bundle</button>'
+ +'<h3 class="sct">Escena: '+esc(k.tt)+'</h3>'+imgHTML(k.img)+'<ol class="seq">'+k.st.map(x=>'<li>'+ver(x)+'</li>').join('')+'</ol>'
+ +'<p class="muted">'+ver(k.pie)+'</p>'
+ +'<details class="ckd" id="ckd"'+(st.o?' open':'')+'><summary>'+(done?'Devolución del checklist':'Checklist para tildar: <span id="ckn">'+its.filter((x,i)=>m[i]).length+'</span> de '+its.length)+'</summary>';
+ if(done){
+  /* En la sala, quien tildó en su pantalla ve la devolución de sus marcas. El resultado del equipo sale de las marcas confirmadas. */
+  const own=mode==='follow'&&st.m.some(Boolean),eo=ckEval(c,m),e=own?ckEval(c,st.m):eo,lab=own?'Tu marca: ':'Marca: ';
+  h+='<p><b>Fallas detectadas'+(mode==='follow'?' por el equipo':'')+': '+eo.hit+' de '+eo.nf+'.</b>'+(eo.fa?' Falsas alarmas: '+eo.fa+'.':'')+'</p>';
+  if(mode==='follow')h+='<p class="muted">'+(own?'Abajo va la devolución de tus marcas, las que tildaste en tu pantalla.':'Abajo van las marcas que confirmó quien coordina.')+'</p>';
+  e.rows.forEach(r=>{h+='<div class="ckr"><div class="ckl">'+ico(r.id)+'<span>'+esc(IT[r.id][0])+'</span></div><span class="rt '+r.r+'">'+RT[r.r]+'</span><span>'+(r.x?lab+MK[r.x]+'. ':'')+(r.x!==r.t?'Correcto: '+MK[r.t]+'.':'')+'</span><div class="muted">'+ver(r.n)+'</div></div>'});
+  if(mode==='solo')h+='<button class="btn sec sm" id="ckx">Volver a tildar</button>';
+ }else{
+  h+='<p class="muted">No cumple: la escena muestra que se hizo mal o que se salteó. No se observa: la escena no llega a mostrarlo.</p>';
+  its.forEach((id,i)=>{h+='<div class="cki"><div class="ckl">'+ico(id)+'<span>'+esc(IT[id][0])+'</span></div><div class="seg" role="group" aria-label="'+esc(IT[id][0])+'">'+[1,2,3].map(v=>'<button type="button" class="sg" data-k="'+i+'" data-v="'+v+'" aria-pressed="'+(m[i]===v)+'">'+MK[v]+'</button>').join('')+'</div></div>'});
+  if(mode==='follow')h+='<p class="muted">Tus marcas quedan en tu pantalla. Decí en voz alta lo que no se cumple: la pausa vale cuando la confirma quien coordina. Después vas a ver la devolución de tus marcas.</p>';
+  else h+='<button class="btn sm" id="ckc">'+(mode==='host'?'Confirmar sin pedir pausa':'Comparar con la escena')+'</button><p class="muted" id="ckh"></p>'
+  +(mode==='host'?'<p class="muted">La pausa es por una falla de seguridad del paciente: un ítem del bundle que no se cumple. Cada falla real detectada suma '+CK_PTS+' puntos y cada falsa alarma descuenta '+CK_SEG+' segundos. Si quien observa tilda en su celular, alcanza con marcar acá lo que diga que no se cumple.</p>':'');
+ }
+ return h+'</details></div>';
+}
+function obsBind(c,st,mode,onOk){
+ on('[data-b]',b=>b.onclick=()=>bundleOpen(b.dataset.b));
+ const d=$('ckd');if(d)d.ontoggle=()=>{st.o=d.open};
+ if(!c.ck||st.d||st.off)return;
+ const n=ST[c.ck.e].it.length,ok=$('ckc'),hint=$('ckh'),cn=$('ckn');
+ const upd=()=>{
+  let f=0,p=0;for(let i=0;i<n;i++){if(!st.m[i])f++;else if(st.m[i]===2)p++}
+  if(cn)cn.textContent=n-f;
+  if(ok&&mode==='host')ok.textContent=p?'Confirmar y pedir pausa de seguridad':'Confirmar sin pedir pausa';
+  if(hint)hint.textContent=f?(f===1?'Falta 1 ítem por tildar.':'Faltan '+f+' ítems por tildar.')+' Se puede confirmar igual: lo que quede sin marcar no suma ni resta.':'';
+ };
+ on('.sg',b=>b.onclick=()=>{
+  const i=+b.dataset.k,v=+b.dataset.v;st.m[i]=st.m[i]===v?0:v;
+  on('.sg[data-k="'+i+'"]',x=>x.setAttribute('aria-pressed',+x.dataset.v===st.m[i]));upd();
+ });
+ if(ok)ok.onclick=()=>{if(onOk)onOk()};
+ upd();
+}
+function badgeSVG(n,on){return '<svg width="44" height="50" viewBox="0 0 44 50" aria-hidden="true"><path d="M22 2L40 9V25C40 36 32 44 22 48 12 44 4 36 4 25V9Z" fill="'+(on?'var(--accent)':'var(--line)')+'"/><text x="22" y="32" font-size="18" font-weight="800" text-anchor="middle" fill="'+(on?'var(--aink)':'var(--mut)')+'">'+n+'</text></svg>'}
+
+/* ---------- Inicio ---------- */
+function home(){
+ stop();R=null;V=null;MODE=null;clearInterval(FT);FT=null;
+ if(S&&S.code&&ROOMC)wait('El coordinador volvió al inicio.');
+ const act=S&&!S.done;
+ put('<h1>Catéteres en Equipo</h1><p class="muted">Juego cooperativo de capacitación para equipos de neonatología, de 2 a 6 personas. Los casos son ficticios.</p>'
+ +(act?'<button class="btn" id="resume">Continuar la partida</button>':'')
+ +'<button class="btn'+(act?' sec':'')+'" id="coord">Coordinar el juego</button>'
+ +'<button class="btn sec" id="view">Ver el caso en mi celular</button>'
+ +'<button class="btn sec sm" id="rules">Cómo se juega</button>'
+ +'<p class="muted">Es un entrenamiento y no reemplaza el protocolo de la unidad. La partida se guarda solo en este celular.</p>');
+ if(act)$('resume').onclick=resume;
+ $('coord').onclick=setup;$('view').onclick=viewerPick;$('rules').onclick=rules;
+}
+function rules(){
+ put('<h2>Cómo se juega</h2>'
+ +'<p>Una persona coordina desde su celular. El resto puede abrir la opción Ver el caso en mi celular, elegir el mismo nivel y la misma ronda, y mirar las imágenes de cerca.</p>'
+ +'<p>En cada ronda hay cuatro roles que rotan: quien lee el caso, quien valora, quien observa el checklist y quien comunica con SBAR. La respuesta vale cuando la marca quien comunica.</p>'
+ +'<p>Quien observa compara la escena con el bundle. Tilda cada ítem como Cumple, No cumple o No se observa, y confirma. Si la escena muestra que algo se hizo mal o que se salteó un paso, va No cumple. Si la escena no llega a mostrarlo, va No se observa. Si algo no se cumple, el equipo hace una pausa por una falla de seguridad del paciente. Cada falla real detectada suma '+CK_PTS+' puntos y cada falsa alarma descuenta '+CK_SEG+' segundos. Las rondas con escena tienen '+CK_EXTRA+' segundos más.</p>'
+ +'<p>Quien observa puede tildar en su propio celular y decir en voz alta lo que no se cumple. La pausa vale cuando se confirma en el celular de quien coordina. Después, cada persona ve la devolución de sus marcas.</p>'
+ +'<p>El botón Ver bundle abre la tarjeta de referencia, y la puede mirar todo el equipo. Hay escena para observar en estos casos: '+CASES.filter(c=>c.ck).map(c=>c.id).join(', ')+'. En el resto no hay escena: quien observa acompaña la valoración y revisa la respuesta antes de que se marque.</p>'
+ +'<button class="btn sec sm" data-b="ins">Ver bundle</button>'
+ +'<p>Cada caso trae tres preguntas: identificar vale 10 puntos, interpretar 20 y la intervención prioritaria 30. Terminar sin errores antes de la mitad del tiempo suma 10, y un SBAR completo suma otros 10.</p>'
+ +'<p>El equipo tiene 5 vidas. Un error crítico, como confirmar una punta mal ubicada o no detectar una extravasación, resta una. Si se acaban, hay una reanimación del equipo: se repite el nivel con 3 vidas y la mitad del puntaje.</p>'
+ +'<p>Cada nivel superado da una insignia y una tarjeta de ayuda de un solo uso: segunda mirada, pausa de equipo, consulta al especialista o escudo. Para pasar de nivel hace falta el 60% del puntaje de las preguntas.</p>'
+ +'<button class="btn" id="bk">Volver</button>');
+ $('bk').onclick=home;on('[data-b]',b=>b.onclick=()=>bundleOpen(b.dataset.b));
+}
+
+/* ---------- Partida nueva ---------- */
+function setup(){
+ let fmt='corto';
+ put('<h2>Nueva partida</h2><p>Escribí los nombres separados por coma, o dejalo vacío para empezar sin nombres.</p>'
+ +'<input type="text" id="nm" placeholder="Ana, Beto, Carla" autocomplete="off" aria-label="Nombres de las personas">'
+ +'<h3 style="margin-top:16px">Formato</h3><div class="chips"><button class="chip" aria-pressed="true" data-f="corto">Corto, unos 25 min</button><button class="chip" aria-pressed="false" data-f="completo">Completo, unos 45 min</button></div>'
+ +'<button class="btn" id="go">Empezar</button><button class="btn sec" id="bk">Volver</button>');
+ on('[data-f]',b=>b.onclick=()=>{fmt=b.dataset.f;on('[data-f]',x=>x.setAttribute('aria-pressed',x===b))});
+ $('bk').onclick=home;
+ $('go').onclick=()=>{
+  const names=$('nm').value.split(',').map(x=>x.trim()).filter(Boolean).slice(0,6);
+  S={names,fmt,lv:0,ri:0,rc:0,score:0,lives:5,badges:[],cards:[],shield:false,review:[],plan:makePlan(fmt),lvBase:0,lvScore:0,half:false,done:false,code:rand4()};
+  save();levelIntro();
+ };
+}
+function resume(){stop();if(!S.code){S.code=rand4();save()}if(S.lives<=0)rescue();else levelIntro()}
+function levelIntro(){
+ stop();ensureHost();const k=S.lv,L=LV[k],n=S.plan[k].length,mx=n*60*(S.half?.5:1),min=Math.ceil(.6*mx);
+ wait('Nivel '+(k+1)+'. '+L.n+'. El coordinador está por empezar.');
+ put('<h2>Nivel '+(k+1)+'. '+L.n+'</h2><p>'+L.f+'</p>'
+ +'<div class="card"><table class="t"><tr><td>Rondas</td><td>'+n+'</td></tr><tr><td>Tiempo por ronda</td><td>'+(L.t>=120?(L.t/60)+' min':L.t+' s')+'</td></tr>'+(S.plan[k].some(id=>CASES.find(c=>c.id===id).ck)?'<tr><td>Rondas con escena</td><td>'+CK_EXTRA+' s más</td></tr>':'')+'<tr><td>Mínimo para avanzar</td><td>'+min+' puntos</td></tr><tr><td>Insignia</td><td>'+L.b+'</td></tr></table></div>'
+ +(S.half?'<div class="fb warn"><strong>Reanimación del equipo</strong>En este nivel hay 3 vidas y la mitad del puntaje.</div>':'')
+ +(ROOM&&S.code?'<div class="card"><h3>Sala en vivo</h3><p class="muted">Para que el resto de las personas siga el caso en su celular: abren este mismo enlace, eligen Ver el caso en mi celular y escriben el código. Solo quien coordina responde.</p><div class="big" style="letter-spacing:6px">'+S.code.toUpperCase()+'</div></div>':'')
+ +'<div class="hud" style="position:static;border:0"><span class="hearts" aria-label="'+S.lives+' vidas">'+hearts()+'</span><span><b>'+S.score+'</b> puntos</span></div>'
+ +'<button class="btn" id="go">'+(S.ri?'Seguir en la ronda '+(S.ri+1):'Empezar nivel')+'</button><button class="btn sec" id="hm">Salir al inicio</button>');
+ $('go').onclick=startRound;$('hm').onclick=home;
+}
+
+/* ---------- Ronda ---------- */
+function startRound(){
+ stop();ensureHost();
+ const c=CASES.find(x=>x.id===S.plan[S.lv][S.ri]),t=LV[S.lv].t+(c.ck?CK_EXTRA:0);
+ R={c,qi:0,tk:0,tot:t,left:t,err:0,freeze:0,hint:false,hid:[],ans:null,perm:shuffle([0,1,2,3]),k:{m:[],d:false,o:false},msg:null,timed:false,sbar:[0,0,0,0],closing:false,last:Date.now(),pts:0,head:''};
+ S.rc++;save();
+ R.timer=setInterval(tick,250);
+ drawRound(true);
+}
+function tick(){
+ if(!R||R.closing)return;
+ const n=Date.now(),dt=(n-R.last)/1000;R.last=n;
+ if(R.ans===null){if(R.freeze>0)R.freeze=Math.max(0,R.freeze-dt);else R.left-=dt}
+ const e=$('tm');
+ if(e){e.textContent=(R.freeze>0?'Pausa ':'')+mmss(R.freeze>0?R.freeze:R.left);e.classList.toggle('low',R.freeze===0&&R.left<20)}
+ if(R.left<=0){R.timed=true;R.left=0;closeRound()}
+}
+function rolesHTML(nm,rc){
+ nm=nm||S.names;rc=rc==null?S.rc:rc;
+ const n=nm.length,r=['Lee el caso','Valora','Observa el checklist','Comunica con SBAR'];
+ if(n<2)return '<div class="muted">Roles de la ronda: lee, valora, observa el checklist y comunica.</div>';
+ return '<div class="roles">'+r.map((x,j)=>'<span>'+x+'</span><b>'+esc(nm[(rc+j)%n])+'</b>').join('')+'</div>';
+}
+function hudHTML(){
+ return '<div class="hud"><div><b>Nivel '+(S.lv+1)+'</b><div class="muted">Ronda '+(S.ri+1)+' de '+S.plan[S.lv].length+'</div></div>'
+ +'<div style="text-align:center"><div class="tm" id="tm">'+mmss(R.freeze>0?R.freeze:R.left)+'</div>'+(S.code&&ROOM?'<div class="muted">Sala '+S.code.toUpperCase()+', <span id="wc">'+watchers()+'</span> viendo</div>':'')+'</div>'
+ +'<div style="text-align:right"><div class="hearts" aria-label="'+S.lives+' vidas">'+hearts()+'</div><div class="muted"><b>'+S.score+'</b> puntos'+(S.shield?', escudo activo':'')+'</div></div></div>';
+}
+function drawRound(sc){
+ if(!R)return;
+ const c=R.c,q=c.q[R.qi],tom=c.tomas?c.tomas[R.tk]:null,img=tom?tom.img:c.img,rows=tom?tom.rows:c.rows,done=R.ans!==null;
+ let h=hudHTML()+'<h2 style="margin-top:12px">'+c.id+' '+esc(c.t)+'</h2>'+rolesHTML()+'<p>'+esc(c.ctx)+'</p>'+imgHTML(img,R.hint);
+ if(c.tomas)h+='<div class="chips">'+c.tomas.map((t,i)=>'<button class="chip" data-t="'+i+'" aria-pressed="'+(i===R.tk)+'">Toma '+(i+1)+', '+t.h+'</button>').join('')+'</div>';
+ h+=tableHTML(rows);
+ h+=obsHTML(c,R.k,'host',obsWho(S.names,S.rc));
+ h+='<div id="msg">'+(R.msg?'<div class="fb '+R.msg[0]+'">'+esc(R.msg[1])+'</div>':'')+'</div>';
+ h+='<div class="card"><div class="qn">Pregunta '+(R.qi+1)+' de 3, '+QL[R.qi]+'</div><h3>'+esc(q.q)+'</h3>';
+ R.perm.forEach(i=>{
+  let cl='opt';if(done){if(i===0)cl+=' ok';else if(i===R.ans)cl+=' bad'}
+  h+='<button class="'+cl+'" type="button" data-i="'+i+'"'+(R.hid.includes(i)?' hidden':'')+(done?' disabled':'')+'>'+esc(q.o[i])+'</button>';
+ });
+ h+='</div>';
+ if(done){
+  const ok=R.ans===0;
+  h+='<div class="fb '+(ok?'ok':'bad')+'"><strong>'+esc(R.head)+'</strong>'+(ok?'':'Respuesta correcta: <b>'+esc(q.o[0])+'</b>.<br>')+ver(q.w)+'<div class="src">Fuente: '+ver(q.s)+'</div></div>'
+  +'<button class="btn" id="nx">'+(S.lives<=0?'Continuar':(R.qi>=2?'Cerrar la ronda':'Siguiente pregunta'))+'</button>';
+ } else if(S.cards.length){
+  h+='<h3>Tarjetas de ayuda</h3><div class="cards">'+S.cards.map(k=>{
+   const cd=CARDS.find(x=>x.k===k);
+   const dis=(k==='segunda'&&(R.hint||!img||img.k==='tags'||img.k==='med'))||(k==='pausa'&&R.freeze>0)||(k==='consulta'&&R.hid.length>0)||(k==='escudo'&&S.shield);
+   return '<button class="cbtn" data-c="'+k+'"'+(dis?' disabled':'')+'><b>'+cd.n+'</b><small>'+cd.d+'</small></button>';
+  }).join('')+'</div>';
+ }
+ put(h,sc===true);
+ on('[data-i]',b=>b.onclick=()=>answer(+b.dataset.i));
+ on('[data-t]',b=>b.onclick=()=>{R.tk=+b.dataset.t;drawRound(false)});
+ on('[data-c]',b=>b.onclick=()=>useCard(b.dataset.c));
+ obsBind(c,R.k,'host',obsConfirm);
+ if($('nx'))$('nx').onclick=nextQ;
+ sync();
+}
+function answer(i){
+ if(!R||R.ans!==null||R.closing)return;
+ const q=R.c.q[R.qi],h=S.half?.5:1,pts=[10,20,30][R.qi]*h;
+ R.ans=i;
+ if(i===0){R.pts+=pts;S.score+=pts;S.lvBase+=pts;S.lvScore+=pts;R.head='Correcto, suman '+pts+' puntos.'}
+ else{
+  R.err++;
+  const crit=q.c.includes(i);
+  S.review.push({lv:S.lv,ctx:R.c.id+' '+R.c.t,q:q.q,got:q.o[i],ok:q.o[0],why:q.w,src:q.s,crit});
+  if(crit){if(S.shield){S.shield=false;R.head='Error crítico. El escudo evitó perder una vida.'}else{S.lives--;R.head='Error crítico, pierden una vida.'}}
+  else R.head='Respuesta incorrecta, no suman puntos.';
+ }
+ save();drawRound(false);
+}
+function nextQ(){
+ if(S.lives<=0){stop();R=null;rescue();return}
+ R.qi++;
+ if(R.qi>=3){closeRound();return}
+ R.ans=null;R.hid=[];R.perm=shuffle([0,1,2,3]);R.msg=null;R.last=Date.now();
+ drawRound(true);
+}
+function useCard(k){
+ const idx=S.cards.indexOf(k);if(idx<0||R.ans!==null)return;
+ if(k==='segunda'){R.hint=true;R.left+=30}
+ else if(k==='pausa'){R.freeze=60}
+ else if(k==='consulta'){R.hid=shuffle([1,2,3]).slice(0,2)}
+ else if(k==='escudo'){S.shield=true;R.msg=['ok','Escudo activo: absorbe el próximo error crítico.']}
+ S.cards.splice(idx,1);save();drawRound(false);
+}
+/* Confirmación del checklist: suma por cada falla real detectada y descuenta tiempo por cada falsa alarma. Vale una vez por ronda. */
+function obsConfirm(){
+ if(!R||R.closing||!R.c.ck||R.k.d)return;
+ R.k.m=ST[R.c.ck.e].it.map((x,i)=>R.k.m[i]||0);
+ const e=ckEval(R.c,R.k.m),h=S.half?.5:1,pts=CK_PTS*h*e.hit,asked=R.k.m.some(x=>x===2);
+ R.k.d=true;R.k.o=true;
+ S.score+=pts;S.lvScore+=pts;
+ if(e.fa)R.left=Math.max(1,R.left-CK_SEG*e.fa);
+ let t=e.hit?'Pausa justificada: '+e.hit+' de '+e.nf+(e.nf===1?' falla detectada':' fallas detectadas')+', suman '+pts+' puntos.':asked?'La pausa no encontró ninguna falla real.':'Checklist confirmado sin pausa.';
+ if(e.miss)t+=e.miss===1?' Quedó 1 falla sin detectar.':' Quedaron '+e.miss+' fallas sin detectar.';
+ if(e.fa)t+=(e.fa===1?' Hubo 1 falsa alarma':' Hubo '+e.fa+' falsas alarmas')+': se descuentan '+(CK_SEG*e.fa)+' segundos.';
+ R.msg=[e.hit&&!e.miss&&!e.fa?'ok':'warn',t];
+ save();drawRound(false);
+}
+
+/* ---------- Cierre de ronda y nivel ---------- */
+function closeRound(){
+ R.closing=true;stop();
+ R.speed=R.err===0&&!R.timed&&R.left>R.tot/2;
+ drawClose();
+}
+function drawClose(){
+ const c=R.c,ok4=R.sbar.every(Boolean),names=['Situación','Antecedentes','Valoración','Recomendación'];
+ let h='<h2>Cierre de la ronda '+c.id+'</h2>';
+ if(R.timed)h+='<div class="fb warn"><strong>Se acabó el tiempo</strong>La ronda se cierra con lo que estaba marcado.</div>';
+ h+='<div class="card"><table class="t"><tr><td>Puntos de las preguntas</td><td><b>'+R.pts+'</b></td></tr><tr><td>Errores</td><td>'+R.err+'</td></tr>'
+ +'<tr><td>Bonus de rapidez</td><td>'+(R.speed?'+10':'No suma ('+(R.err?'hubo errores':'pasó la mitad del tiempo')+')')+'</td></tr></table></div>';
+ h+='<h3>SBAR de quien comunica</h3><p class="muted">Tocá cada parte que el mensaje cubrió. Con las cuatro, suma 10 puntos.'+(c.sbar?' En este evento es obligatorio.':'')+'</p><div class="chips">'
+ +names.map((n,i)=>'<button class="chip" data-s="'+i+'" aria-pressed="'+(R.sbar[i]?'true':'false')+'">'+n+'</button>').join('')+'</div>';
+ if(R.err===0&&!R.timed&&S.lv>=3&&S.lives<5)h+='<div class="fb ok"><strong>Ronda sin errores</strong>Recuperan una vida.</div>';
+ h+='<button class="btn" id="cont"'+(c.sbar&&!ok4?' disabled':'')+'>Continuar</button>';
+ wait('Cierre de la ronda '+c.id+'. El coordinador suma los puntos.');
+ put(hudHTML().replace(/id="tm"/,'')+h);
+ on('[data-s]',b=>b.onclick=()=>{R.sbar[+b.dataset.s]=R.sbar[+b.dataset.s]?0:1;drawClose();});
+ $('cont').onclick=finishRound;
+}
+function finishRound(){
+ const h=S.half?.5:1;let add=0;
+ if(R.speed)add+=10;
+ if(R.sbar.every(Boolean))add+=10;
+ add*=h;S.score+=add;S.lvScore+=add;
+ if(R.err===0&&!R.timed&&S.lv>=3&&S.lives<5)S.lives++;
+ S.ri++;R=null;save();
+ if(S.ri>=S.plan[S.lv].length)levelEnd();else startRound();
+}
+function levelEnd(){
+ const k=S.lv,n=S.plan[k].length,mx=n*60*(S.half?.5:1),min=Math.ceil(.6*mx),pass=S.lvBase>=min;
+ let coop=true;
+ wait('Nivel '+(k+1)+(pass?' superado.':' sin superar.'));
+ const draw=()=>{
+  put('<h2>Nivel '+(k+1)+' '+(pass?'superado':'sin superar')+'</h2>'
+  +'<div class="card"><table class="t"><tr><td>Puntos de las preguntas</td><td><b>'+S.lvBase+'</b> de '+mx+'</td></tr><tr><td>Mínimo para avanzar</td><td>'+min+'</td></tr><tr><td>Puntaje total</td><td>'+S.score+'</td></tr></table></div>'
+  +(pass?'<div class="badge">'+badgeSVG(k+1,true)+'<div><b>Insignia: '+LV[k].b+'</b>'+(k<4?'<div class="muted">Tarjeta de ayuda: '+CARDS[k].n+'</div>':'')+'</div></div>'
+  +'<p>Cooperación: si todas las personas ocuparon algún rol, el equipo suma 50 puntos.</p><div class="chips"><button class="chip" id="cp" aria-pressed="'+coop+'">Todas participaron</button></div>'
+  :'<div class="fb warn"><strong>Hace falta repetir el nivel</strong>No se llegó al 60% del puntaje de las preguntas. Se repite el nivel y se conservan las vidas.</div>')
+  +'<button class="btn" id="nx">'+(pass?(k<4?'Siguiente nivel':'Ir al debriefing'):'Repetir el nivel')+'</button>');
+  if($('cp'))$('cp').onclick=()=>{coop=!coop;draw()};
+  $('nx').onclick=()=>{
+   if(pass){
+    if(coop)S.score+=50;
+    S.badges.push(LV[k].b);if(k<4)S.cards.push(CARDS[k].k);
+    S.half=false;S.lv++;S.ri=0;S.lvBase=0;S.lvScore=0;
+    if(S.lv>=5){S.done=true;save();debrief();return}
+    save();levelIntro();
+   }else{S.score-=S.lvScore;S.lvScore=0;S.lvBase=0;S.ri=0;save();levelIntro()}
+  };
+ };
+ draw();
+}
+function rescue(){
+ stop();wait('Reanimación del equipo.');
+ put('<h2>Reanimación del equipo</h2><p>Se terminaron las vidas. Equivocarse en un entrenamiento tiene remedio: se repite el nivel '+(S.lv+1)+' con 3 vidas y la mitad del puntaje, y lo importante es entender qué pasó.</p><button class="btn" id="rs">Repetir el nivel</button>');
+ $('rs').onclick=()=>{S.lives=3;S.half=true;S.score-=S.lvScore;S.lvScore=0;S.lvBase=0;S.ri=0;S.shield=false;save();levelIntro()};
+}
+
+/* ---------- Debriefing y certificado ---------- */
+function debrief(){
+ stop();wait('Debriefing del equipo.');
+ const by={};S.review.forEach(r=>{(by[r.lv]=by[r.lv]||[]).push(r)});
+ const rv=Object.keys(by).map(k=>'<details class="rv"><summary>Nivel '+(+k+1)+'. '+LV[k].n+' ('+by[k].length+')</summary>'+by[k].map(r=>'<div class="rvi'+(r.crit?' crit':'')+'"><div class="muted">'+esc(r.ctx)+(r.crit?', error crítico':'')+'</div><div><b>'+esc(r.q)+'</b></div><div>Marcaron: '+esc(r.got)+'</div><div class="rok">Correcta: '+esc(r.ok)+'</div><div class="muted">'+ver(r.why)+' Fuente: '+ver(r.src)+'</div></div>').join('')+'</details>').join('');
+ put('<h2>Debriefing</h2><p>El puntaje final es <b>'+S.score+'</b>. Se habla de decisiones y de sistemas, no de personas.</p>'
+ +'<details class="rv" open><summary>1. Reacciones</summary><p>¿Cómo se sintió el grupo? ¿Qué momento les costó más y por qué?</p></details>'
+ +'<details class="rv" open><summary>2. Análisis</summary><p>Elijan dos errores y pregúntense qué pasó en la decisión, no quién se equivocó.</p>'+(rv||'<p class="muted">No hubo errores registrados.</p>')+'</details>'
+ +'<details class="rv" open><summary>3. Aplicación</summary><p>Cada persona nombra una práctica del bundle que va a revisar en su unidad durante esta semana.</p></details>'
+ +'<button class="btn" id="ct">Ver el certificado</button><button class="btn sec" id="hm">Salir al inicio</button>');
+ $('ct').onclick=cert;$('hm').onclick=home;
+}
+function cert(){
+ wait('Fin de la partida.');
+ const who=S.names.length?S.names.join(', '):'Equipo';
+ put('<div class="cert"><h2>Certificado de participación</h2><p>Capacitación cooperativa en catéteres neonatales</p><p><b>'+esc(who)+'</b></p><div class="big">'+S.score+'</div><p class="muted">puntos del equipo</p>'
+ +'<div style="text-align:left">'+LV.map((l,i)=>'<div class="badge">'+badgeSVG(i+1,S.badges.includes(l.b))+'<div><b>'+l.b+'</b><div class="muted">'+(S.badges.includes(l.b)?'Obtenida':'No obtenida')+', nivel '+(i+1)+'</div></div></div>').join('')+'</div>'
+ +'<p class="muted">'+new Date().toLocaleDateString('es-AR')+'. Certifica la participación en un entrenamiento, no una acreditación de competencias.</p></div>'
+ +'<button class="btn noprint" id="pr">Imprimir o guardar</button><button class="btn sec noprint" id="nw">Nueva partida</button><button class="btn sec noprint" id="hm">Salir al inicio</button>');
+ $('pr').onclick=()=>{try{window.print()}catch(e){}};
+ $('nw').onclick=()=>{wipe();S=null;setup()};$('hm').onclick=home;
+}
+
+/* ---------- Modo espejo: ver el caso en mi celular ---------- */
+function viewerPick(){
+ stop();MODE=null;clearInterval(FT);FT=null;
+ let last='';try{last=localStorage.getItem('cet-follow')||''}catch(e){}
+ put('<h2>Ver el caso en mi celular</h2>'
+ +'<div class="card"><h3>Seguir la partida en vivo</h3><p class="muted">Quien coordina responde. Vos ves el mismo caso y las imágenes en tu pantalla. Pedile el código de la sala.</p>'
+ +'<input type="text" id="cd" maxlength="4" autocapitalize="characters" autocomplete="off" placeholder="Código, por ejemplo K7M2" value="'+esc(last.toUpperCase())+'" aria-label="Código de la sala"><div id="fm"></div>'
+ +'<button class="btn" id="fj">Unirme a la partida</button></div>'
+ +'<p>O elegí a mano el nivel y la ronda.</p>'
+ +LV.map((l,k)=>'<h3>Nivel '+(k+1)+'. '+l.n+'</h3>'+CASES.filter(c=>c.lv===k).map(c=>'<button class="btn sec sm" data-id="'+c.id+'">'+c.id+' '+esc(c.t)+'</button>').join('')).join('')
+ +'<button class="btn" id="bk">Volver</button>');
+ on('[data-id]',b=>b.onclick=()=>viewerShow(b.dataset.id));
+ $('fj').onclick=followStart;$('bk').onclick=home;
+}
+async function followStart(){
+ const code=($('cd').value||'').toLowerCase().replace(/[^a-z0-9]/g,''),fm=$('fm');
+ if(code.length<4){fm.innerHTML='<div class="fb warn">Escribí el código de 4 caracteres.</div>';return}
+ if(!ROOM){fm.innerHTML='<div class="fb warn">La sala en vivo no está disponible en este momento. Podés elegir el caso a mano más abajo.</div>';return}
+ fm.innerHTML='<p class="muted">Conectando...</p>';
+ const r=await joinCode(code);
+ if(!r){fm.innerHTML='<div class="fb warn">No se pudo entrar a la sala. Revisá el código e intentá de nuevo.</div>';return}
+ try{localStorage.setItem('cet-follow',code)}catch(e){}
+ MODE='follow';FOLLOW=code;lastPres=null;FP=null;
+ if(UNS)UNS();
+ UNS=r.onPeers(()=>drawFollow());
+ clearInterval(FT);FT=setInterval(ftick,500);
+ drawFollow();
+}
+function leaveFollow(){
+ clearInterval(FT);FT=null;if(UNS){UNS();UNS=null}
+ MODE=null;FP=null;lastPres=null;
+ const r=ROOMC;ROOMC=null;if(r){try{r.leave()}catch(e){}}
+ viewerPick();
+}
+function hostPeer(){let b=null;if(ROOMC)ROOMC.peers().forEach(p=>{if(p.presence&&p.presence.host===1&&!p.isMe&&(!b||p.updatedAt>b.updatedAt))b=p});return b}
+function ftick(){
+ if(MODE!=='follow'||!FP)return;
+ const s=FP.presence;if(s.scr!=='round')return;
+ const el=(Date.now()-FP.updatedAt)/1000;let t,pa='';
+ if(s.a>=0)t=s.left;else if(s.fr>0){const f=s.fr-el;if(f>0){t=f;pa='Pausa '}else t=s.left-(el-s.fr)}else t=s.left-el;
+ const e=$('ftm');if(e){e.textContent=pa+mmss(t);e.classList.toggle('low',!pa&&t<20)}
+}
+function drawFollow(){
+ if(MODE!=='follow')return;
+ const hp=hostPeer(),bye='<button class="btn sec" id="fx">Salir de la sala</button>';
+ if(!hp){FP=null;lastPres=null;put('<h2>Sala '+esc(FOLLOW.toUpperCase())+'</h2><p>Esperando al coordinador. Cuando empiece la partida vas a ver el caso acá.</p>'+bye);$('fx').onclick=leaveFollow;return}
+ const s=hp.presence;
+ if(s===lastPres)return;
+ lastPres=s;FP=hp;
+ const c=CASES.find(x=>x.id===s.id);
+ if(s.scr!=='round'||!c||!(s.qi>=0&&s.qi<3)){
+  put('<h2>Sala '+esc(FOLLOW.toUpperCase())+'</h2><div class="card"><h3>'+esc(String(s.m||'El coordinador está preparando la partida.'))+'</h3><div class="hearts" aria-label="'+(+s.lives||0)+' vidas">'+heartsN(+s.lives||0)+'</div><p class="muted"><b>'+(+s.score||0)+'</b> puntos del equipo</p></div>'+bye);
+  $('fx').onclick=leaveFollow;return;
+ }
+ const q=c.q[s.qi],tom=c.tomas?c.tomas[s.tk]:null,img=tom?tom.img:c.img,rows=tom?tom.rows:c.rows,done=s.a>=0;
+ const perm=Array.isArray(s.perm)&&s.perm.length===4?s.perm:[0,1,2,3],hid=Array.isArray(s.hid)?s.hid:[];
+ /* Las marcas confirmadas llegan como un texto corto, con un dígito por ítem (por ejemplo 121111; 0 es sin marcar). */
+ const fnm=Array.isArray(s.nm)?s.nm.map(String):[],fkey=s.id+'|'+(+s.rc||0);
+ if(!FK||FK.key!==fkey)FK={key:fkey,m:[],d:false,o:false,off:null};
+ const off=c.ck&&typeof s.ck==='string'&&s.ck.length===ST[c.ck.e].it.length&&/^[0-3]+$/.test(s.ck)?s.ck.split('').map(Number):null;
+ if(off&&!FK.off)FK.o=true;
+ FK.off=off;
+ let h='<div class="hud"><div><b>Nivel '+((+s.lv||0)+1)+'</b><div class="muted">Ronda '+((+s.ri||0)+1)+' de '+(+s.n||1)+'</div></div><div class="tm" id="ftm">'+mmss(s.left)+'</div><div style="text-align:right"><div class="hearts" aria-label="'+(+s.lives||0)+' vidas">'+heartsN(+s.lives||0)+'</div><div class="muted"><b>'+(+s.score||0)+'</b> puntos</div></div></div>'
+ +'<div class="fb ok" style="margin-top:10px"><strong>Estás viendo la partida en vivo</strong>Solo quien coordina responde. Sala '+esc(FOLLOW.toUpperCase())+'.</div>'
+ +'<h2>'+c.id+' '+esc(c.t)+'</h2>'+rolesHTML(fnm,+s.rc||0)+'<p>'+esc(c.ctx)+'</p>'+imgHTML(img,!!s.hint);
+ if(c.tomas)h+='<div class="chips">'+c.tomas.map((t,i)=>'<span class="chip" aria-pressed="'+(i===s.tk)+'">Toma '+(i+1)+', '+t.h+'</span>').join('')+'</div>';
+ h+=tableHTML(rows);
+ h+=obsHTML(c,FK,'follow',obsWho(fnm,+s.rc||0));
+ if(s.msg)h+='<div class="fb '+(s.mt==='ok'?'ok':'warn')+'">'+esc(String(s.msg))+'</div>';
+ h+='<div class="card"><div class="qn">Pregunta '+(s.qi+1)+' de 3, '+QL[s.qi]+'</div><h3>'+esc(q.q)+'</h3>';
+ perm.forEach(i=>{
+  let cl='opt';if(done){if(i===0)cl+=' ok';else if(i===s.a)cl+=' bad'}
+  h+='<button class="'+cl+'" type="button" disabled'+(hid.includes(i)?' hidden':'')+'>'+esc(q.o[i]||'')+'</button>';
+ });
+ h+='</div>';
+ if(done)h+='<div class="fb '+(s.a===0?'ok':'bad')+'"><strong>'+esc(String(s.head||''))+'</strong>'+(s.a===0?'':'Respuesta correcta: <b>'+esc(q.o[0])+'</b>.<br>')+ver(q.w)+'<div class="src">Fuente: '+ver(q.s)+'</div></div>';
+ h+=bye;
+ put(h,false);$('fx').onclick=leaveFollow;obsBind(c,FK,'follow');ftick();
+}
+function viewerShow(id){
+ const c=CASES.find(x=>x.id===id);
+ V={c,qi:0,tk:0,rev:false,mine:null,perm:shuffle([0,1,2,3]),k:{m:[],d:false,o:false}};
+ drawV(true);
+}
+function drawV(sc){
+ const c=V.c,q=c.q[V.qi],tom=c.tomas?c.tomas[V.tk]:null,img=tom?tom.img:c.img,rows=tom?tom.rows:c.rows,ix=CASES.indexOf(c);
+ let h='<div class="row2"><button class="btn sec sm" id="vp">Elegir otro caso</button><button class="btn sec sm" id="vh">Inicio</button></div>'
+ +'<h2>Nivel '+(c.lv+1)+', '+c.id+' '+esc(c.t)+'</h2><p>'+esc(c.ctx)+'</p>'+imgHTML(img,V.rev);
+ if(c.tomas)h+='<div class="chips">'+c.tomas.map((t,i)=>'<button class="chip" data-t="'+i+'" aria-pressed="'+(i===V.tk)+'">Toma '+(i+1)+', '+t.h+'</button>').join('')+'</div>';
+ h+=tableHTML(rows);
+ h+=obsHTML(c,V.k,'solo','');
+ h+='<div class="card"><div class="qn">Pregunta '+(V.qi+1)+' de 3, '+QL[V.qi]+'</div><h3>'+esc(q.q)+'</h3>';
+ V.perm.forEach(i=>{
+  let cl='opt';if(V.rev){if(i===0)cl+=' ok';else if(i===V.mine)cl+=' bad'}else if(i===V.mine)cl+=' mine';
+  h+='<button class="'+cl+'" type="button" data-i="'+i+'"'+(V.rev?' disabled':'')+'>'+esc(q.o[i])+'</button>';
+ });
+ h+='<p class="muted">Tocá una opción para marcarla en tu pantalla y discutila con el equipo. La respuesta la dice en voz alta quien comunica.</p>';
+ if(V.rev)h+='<div class="fb ok"><strong>Respuesta correcta</strong>'+ver(q.w)+'<div class="src">Fuente: '+ver(q.s)+'</div></div>';
+ else h+='<button class="btn sec sm" id="vr">Ver la respuesta correcta</button>';
+ h+='<div class="row2"><button class="btn sec sm" id="qp"'+(V.qi===0?' disabled':'')+'>Pregunta anterior</button><button class="btn sec sm" id="qn"'+(V.qi===2?' disabled':'')+'>Pregunta siguiente</button></div></div>'
+ +'<div class="row2"><button class="btn sm" id="cp"'+(ix===0?' disabled':'')+'>Caso anterior</button><button class="btn sm" id="cn"'+(ix===CASES.length-1?' disabled':'')+'>Caso siguiente</button></div>';
+ put(h,sc===true);
+ on('[data-i]',b=>b.onclick=()=>{if(!V.rev){V.mine=+b.dataset.i;drawV(false)}});
+ on('[data-t]',b=>b.onclick=()=>{V.tk=+b.dataset.t;drawV(false)});
+ $('vp').onclick=viewerPick;$('vh').onclick=home;
+ obsBind(c,V.k,'solo',()=>{V.k.d=true;V.k.o=true;drawV(false)});
+ if($('ckx'))$('ckx').onclick=()=>{V.k={m:[],d:false,o:true};drawV(false)};
+ if($('vr'))$('vr').onclick=()=>{V.rev=true;drawV(false)};
+ const go=d=>{V.qi+=d;V.rev=false;V.mine=null;V.perm=shuffle([0,1,2,3]);drawV(true)};
+ $('qp').onclick=()=>go(-1);$('qn').onclick=()=>go(1);
+ $('cp').onclick=()=>viewerShow(CASES[ix-1].id);$('cn').onclick=()=>viewerShow(CASES[ix+1].id);
+}
+window.addEventListener('pagehide',stop);
+home();
+</script>
+</body>
+</html>
